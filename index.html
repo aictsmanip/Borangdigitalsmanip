@@ -1,0 +1,1949 @@
+<!DOCTYPE html>
+<html lang="ms" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SMANIP - Sistem Tempahan Bilik</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        body {
+            box-sizing: border-box;
+        }
+        .fade-in {
+            animation: fadeIn 0.3s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .slot-booked {
+            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+            color: white;
+        }
+        .slot-available {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+        }
+        .slot-hover:hover {
+            transform: scale(1.02);
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .bg-custom {
+            background: var(--custom-bg, linear-gradient(135deg, #f0fdf4, #dcfce7));
+        }
+        .floating-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 40;
+        }
+        @media print {
+            .no-print { display: none !important; }
+            .print-only { display: block !important; }
+        }
+    </style>
+</head>
+<body class="bg-custom min-h-full">
+    <!-- Background Customizer (Admin Only) -->
+    <div id="bg-customizer" class="fixed top-4 right-4 z-50 no-print hidden">
+        <button onclick="toggleBgCustomizer()" class="bg-gray-800 text-white p-2 rounded-full shadow-lg hover:bg-gray-700 transition-colors">
+            🎨
+        </button>
+        <div id="bg-options" class="hidden absolute top-12 right-0 bg-white rounded-lg shadow-xl p-4 w-64">
+            <h4 class="font-bold mb-3">Tukar Latar Belakang</h4>
+            <div class="grid grid-cols-2 gap-2">
+                <button onclick="changeBg('linear-gradient(135deg, #f0fdf4, #dcfce7)')" class="h-8 rounded" style="background: linear-gradient(135deg, #f0fdf4, #dcfce7)"></button>
+                <button onclick="changeBg('linear-gradient(135deg, #fef3c7, #fde68a)')" class="h-8 rounded" style="background: linear-gradient(135deg, #fef3c7, #fde68a)"></button>
+                <button onclick="changeBg('linear-gradient(135deg, #dbeafe, #bfdbfe)')" class="h-8 rounded" style="background: linear-gradient(135deg, #dbeafe, #bfdbfe)"></button>
+                <button onclick="changeBg('linear-gradient(135deg, #f3e8ff, #e9d5ff)')" class="h-8 rounded" style="background: linear-gradient(135deg, #f3e8ff, #e9d5ff)"></button>
+                <button onclick="changeBg('linear-gradient(135deg, #fce7f3, #fbcfe8)')" class="h-8 rounded" style="background: linear-gradient(135deg, #fce7f3, #fbcfe8)"></button>
+                <button onclick="changeBg('linear-gradient(135deg, #ffffff, #f9fafb)')" class="h-8 rounded" style="background: linear-gradient(135deg, #ffffff, #f9fafb)"></button>
+            </div>
+        </div>
+    </div>
+
+
+
+    <div class="container mx-auto px-4 py-6">
+        <!-- Header -->
+        <header class="text-center mb-8">
+            <p class="text-green-600 text-lg"><strong>Sistem Tempahan Bilik Digital</strong></p>
+        </header>
+
+        <!-- Navigation -->
+        <nav class="flex flex-wrap justify-center gap-4 mb-8 no-print">
+            <button onclick="showPage('home')" class="nav-btn bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors">
+                🏠 Utama
+            </button>
+            <button onclick="showPage('booking')" class="nav-btn bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors">
+                📝 Tempah Bilik
+            </button>
+            <button onclick="showPage('schedule')" class="nav-btn bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors">
+                📅 Lihat Jadual Tempahan
+            </button>
+            <button onclick="showPage('admin')" class="nav-btn bg-orange-600 hover:bg-orange-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors">
+                ⚙️ Pentadbir
+            </button>
+        </nav>
+
+        <!-- Home Page -->
+        <div id="home-page" class="page fade-in">
+            <div class="max-w-4xl mx-auto">
+                <div class="bg-white/90 backdrop-blur-sm rounded-xl shadow-lg p-8 text-center">
+                    <!-- Admin Edit Button -->
+                    <div id="admin-edit-home" class="hidden absolute top-4 right-4 z-10">
+                        <button onclick="toggleHomeEditor()" class="bg-orange-600 hover:bg-orange-700 text-white p-2 rounded-full shadow-lg transition-colors">
+                            ✏️
+                        </button>
+                    </div>
+                    
+                    <!-- Logo Section -->
+                    <div class="mb-6">
+                        <img id="school-logo" src="" alt="" class="hidden mx-auto mb-4 max-h-24 w-auto rounded-lg shadow-md">
+                        <div id="default-icon" class="text-6xl mb-6">💻</div>
+                    </div>
+                    
+                    <!-- Editable Content -->
+                    <h2 id="homepage-title" class="text-3xl font-bold text-gray-800 mb-4">Selamat Datang ke SMANIP</h2>
+                    <p id="homepage-description" class="text-gray-600 text-lg mb-8">Sistem tempahan bilik digital yang mudah dan cekap untuk semua guru dan pelajar.</p>
+                    
+                    <div class="grid md:grid-cols-3 gap-6">
+                        <div onclick="showPage('booking')" class="bg-green-50/90 backdrop-blur-sm p-6 rounded-lg border-2 border-green-200 hover:shadow-lg transition-shadow cursor-pointer transform hover:scale-105">
+                            <div class="text-3xl mb-3">📝</div>
+                            <h3 class="font-bold text-green-800 mb-2">Tempah Bilik</h3>
+                            <p class="text-green-600 text-sm">Buat tempahan bilik dengan mudah mengikut jadual waktu persekolahan</p>
+                        </div>
+                        
+                        <div onclick="showPage('schedule')" class="bg-blue-50/90 backdrop-blur-sm p-6 rounded-lg border-2 border-blue-200 hover:shadow-lg transition-shadow cursor-pointer transform hover:scale-105">
+                            <div class="text-3xl mb-3">📅</div>
+                            <h3 class="font-bold text-blue-800 mb-2">Lihat Jadual</h3>
+                            <p class="text-blue-600 text-sm">Semak jadual tempahan mingguan dan ketersediaan bilik</p>
+                        </div>
+                        
+                        <div onclick="showPage('admin')" class="bg-purple-50/90 backdrop-blur-sm p-6 rounded-lg border-2 border-purple-200 hover:shadow-lg transition-shadow cursor-pointer transform hover:scale-105">
+                            <div class="text-3xl mb-3">⚙️</div>
+                            <h3 class="font-bold text-purple-800 mb-2">Pentadbiran</h3>
+                            <p class="text-purple-600 text-sm">Urus dan pantau semua tempahan bilik digital</p>
+                        </div>
+                    </div>
+
+                    <!-- Quick Stats -->
+                    <div class="mt-8 grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div onclick="showPage('admin')" class="bg-gradient-to-r from-green-500 to-green-600 text-white p-4 rounded-lg cursor-pointer hover:shadow-lg transform hover:scale-105 transition-all">
+                            <div class="text-2xl font-bold" id="total-bookings">0</div>
+                            <div class="text-sm">Jumlah Tempahan</div>
+                        </div>
+                        <div onclick="showPage('schedule')" class="bg-gradient-to-r from-blue-500 to-blue-600 text-white p-4 rounded-lg cursor-pointer hover:shadow-lg transform hover:scale-105 transition-all">
+                            <div class="text-2xl font-bold" id="today-bookings">0</div>
+                            <div class="text-sm">Tempahan Hari Ini</div>
+                        </div>
+                        <div onclick="showPage('booking')" class="bg-gradient-to-r from-purple-500 to-purple-600 text-white p-4 rounded-lg cursor-pointer hover:shadow-lg transform hover:scale-105 transition-all">
+                            <div class="text-2xl font-bold" id="available-slots">30</div>
+                            <div class="text-sm">Slot Tersedia</div>
+                        </div>
+                        <div onclick="showUsageDetails()" class="bg-gradient-to-r from-orange-500 to-orange-600 text-white p-4 rounded-lg cursor-pointer hover:shadow-lg transform hover:scale-105 transition-all">
+                            <div class="text-2xl font-bold" id="usage-rate">0%</div>
+                            <div class="text-sm">Kadar Penggunaan</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Homepage Editor Modal (Admin Only) -->
+            <div id="home-editor-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+                <div class="bg-white rounded-xl p-8 max-w-2xl mx-4 w-full max-h-[90vh] overflow-y-auto">
+                    <h3 class="text-xl font-bold text-gray-800 mb-6">✏️ Edit Homepage</h3>
+                    
+                    <form id="home-editor-form" class="space-y-6">
+                        <div>
+                            <label for="edit-title" class="block text-sm font-medium text-gray-700 mb-2">Tajuk Utama</label>
+                            <input type="text" id="edit-title" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500">
+                        </div>
+                        
+                        <div>
+                            <label for="edit-description" class="block text-sm font-medium text-gray-700 mb-2">Penerangan</label>
+                            <textarea id="edit-description" rows="3" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"></textarea>
+                        </div>
+                        
+                        <div>
+                            <label for="logo-upload" class="block text-sm font-medium text-gray-700 mb-2">Logo Sekolah</label>
+                            <input type="file" id="logo-upload" accept="image/*" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500">
+                            <p class="text-sm text-gray-500 mt-1">Format: JPG, PNG, GIF (Maksimum: 2MB)</p>
+                            <button type="button" onclick="removeLogo()" class="mt-2 text-red-600 hover:text-red-800 text-sm">Buang Logo</button>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Latar Belakang Homepage</label>
+                            <div class="mb-4">
+                                <label for="bg-upload" class="block text-sm font-medium text-gray-700 mb-2">Muat Naik Gambar/GIF Latar Belakang</label>
+                                <input type="file" id="bg-upload" accept="image/*,.gif" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500">
+                                <p class="text-sm text-gray-500 mt-1">Format: JPG, PNG, GIF (Maksimum: 5MB)</p>
+                                <button type="button" onclick="removeCustomBg()" class="mt-2 text-red-600 hover:text-red-800 text-sm">Buang Gambar Latar Belakang</button>
+                            </div>
+                            
+                            <!-- Tema Menarik -->
+                            <div class="mb-4">
+                                <h4 class="text-sm font-medium text-gray-700 mb-3">🎨 Tema Menarik</h4>
+                                <div class="grid grid-cols-1 gap-3">
+                                    <!-- Tema Hijau Segar -->
+                                    <div class="border rounded-lg p-3 hover:shadow-md transition-shadow">
+                                        <div class="flex items-center gap-3 mb-2">
+                                            <div class="w-8 h-8 rounded-full" style="background: linear-gradient(135deg, #10b981, #34d399)"></div>
+                                            <span class="font-medium text-gray-800">🌿 Hijau Segar</span>
+                                        </div>
+                                        <div class="grid grid-cols-3 gap-1">
+                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #ecfdf5, #d1fae5)')" class="h-8 rounded border hover:border-green-500" style="background: linear-gradient(135deg, #ecfdf5, #d1fae5)"></button>
+                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #10b981, #34d399)')" class="h-8 rounded border hover:border-green-500" style="background: linear-gradient(135deg, #10b981, #34d399)"></button>
+                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #065f46, #047857)')" class="h-8 rounded border hover:border-green-500" style="background: linear-gradient(135deg, #065f46, #047857)"></button>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Tema Biru Laut -->
+                                    <div class="border rounded-lg p-3 hover:shadow-md transition-shadow">
+                                        <div class="flex items-center gap-3 mb-2">
+                                            <div class="w-8 h-8 rounded-full" style="background: linear-gradient(135deg, #0ea5e9, #38bdf8)"></div>
+                                            <span class="font-medium text-gray-800">🌊 Biru Laut</span>
+                                        </div>
+                                        <div class="grid grid-cols-3 gap-1">
+                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #f0f9ff, #e0f2fe)')" class="h-8 rounded border hover:border-blue-500" style="background: linear-gradient(135deg, #f0f9ff, #e0f2fe)"></button>
+                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #0ea5e9, #38bdf8)')" class="h-8 rounded border hover:border-blue-500" style="background: linear-gradient(135deg, #0ea5e9, #38bdf8)"></button>
+                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #0c4a6e, #075985)')" class="h-8 rounded border hover:border-blue-500" style="background: linear-gradient(135deg, #0c4a6e, #075985)"></button>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Tema Ungu Mewah -->
+                                    <div class="border rounded-lg p-3 hover:shadow-md transition-shadow">
+                                        <div class="flex items-center gap-3 mb-2">
+                                            <div class="w-8 h-8 rounded-full" style="background: linear-gradient(135deg, #8b5cf6, #a78bfa)"></div>
+                                            <span class="font-medium text-gray-800">💜 Ungu Mewah</span>
+                                        </div>
+                                        <div class="grid grid-cols-3 gap-1">
+                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #faf5ff, #f3e8ff)')" class="h-8 rounded border hover:border-purple-500" style="background: linear-gradient(135deg, #faf5ff, #f3e8ff)"></button>
+                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #8b5cf6, #a78bfa)')" class="h-8 rounded border hover:border-purple-500" style="background: linear-gradient(135deg, #8b5cf6, #a78bfa)"></button>
+                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #581c87, #6b21a8)')" class="h-8 rounded border hover:border-purple-500" style="background: linear-gradient(135deg, #581c87, #6b21a8)"></button>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Tema Oren Hangat -->
+                                    <div class="border rounded-lg p-3 hover:shadow-md transition-shadow">
+                                        <div class="flex items-center gap-3 mb-2">
+                                            <div class="w-8 h-8 rounded-full" style="background: linear-gradient(135deg, #f97316, #fb923c)"></div>
+                                            <span class="font-medium text-gray-800">🔥 Oren Hangat</span>
+                                        </div>
+                                        <div class="grid grid-cols-3 gap-1">
+                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #fff7ed, #fed7aa)')" class="h-8 rounded border hover:border-orange-500" style="background: linear-gradient(135deg, #fff7ed, #fed7aa)"></button>
+                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #f97316, #fb923c)')" class="h-8 rounded border hover:border-orange-500" style="background: linear-gradient(135deg, #f97316, #fb923c)"></button>
+                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #9a3412, #c2410c)')" class="h-8 rounded border hover:border-orange-500" style="background: linear-gradient(135deg, #9a3412, #c2410c)"></button>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Tema Merah Jambu Lembut -->
+                                    <div class="border rounded-lg p-3 hover:shadow-md transition-shadow">
+                                        <div class="flex items-center gap-3 mb-2">
+                                            <div class="w-8 h-8 rounded-full" style="background: linear-gradient(135deg, #ec4899, #f472b6)"></div>
+                                            <span class="font-medium text-gray-800">🌸 Merah Jambu Lembut</span>
+                                        </div>
+                                        <div class="grid grid-cols-3 gap-1">
+                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #fdf2f8, #fce7f3)')" class="h-8 rounded border hover:border-pink-500" style="background: linear-gradient(135deg, #fdf2f8, #fce7f3)"></button>
+                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #ec4899, #f472b6)')" class="h-8 rounded border hover:border-pink-500" style="background: linear-gradient(135deg, #ec4899, #f472b6)"></button>
+                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #831843, #be185d)')" class="h-8 rounded border hover:border-pink-500" style="background: linear-gradient(135deg, #831843, #be185d)"></button>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Tema Islamik -->
+                                    <div class="border rounded-lg p-3 hover:shadow-md transition-shadow">
+                                        <div class="flex items-center gap-3 mb-2">
+                                            <div class="w-8 h-8 rounded-full" style="background: linear-gradient(135deg, #059669, #10b981)"></div>
+                                            <span class="font-medium text-gray-800">🕌 Tema Islamik - Hijau Masjid</span>
+                                        </div>
+                                        <div class="grid grid-cols-3 gap-1">
+                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #f0fdf4, #dcfce7)')" class="h-8 rounded border hover:border-green-600" style="background: linear-gradient(135deg, #f0fdf4, #dcfce7)"></button>
+                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #059669, #10b981)')" class="h-8 rounded border hover:border-green-600" style="background: linear-gradient(135deg, #059669, #10b981)"></button>
+                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #064e3b, #065f46)')" class="h-8 rounded border hover:border-green-600" style="background: linear-gradient(135deg, #064e3b, #065f46)"></button>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Tema Islamik Emas -->
+                                    <div class="border rounded-lg p-3 hover:shadow-md transition-shadow">
+                                        <div class="flex items-center gap-3 mb-2">
+                                            <div class="w-8 h-8 rounded-full" style="background: linear-gradient(135deg, #d97706, #f59e0b)"></div>
+                                            <span class="font-medium text-gray-800">✨ Tema Islamik - Emas Klasik</span>
+                                        </div>
+                                        <div class="grid grid-cols-3 gap-1">
+                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #fffbeb, #fef3c7)')" class="h-8 rounded border hover:border-yellow-600" style="background: linear-gradient(135deg, #fffbeb, #fef3c7)"></button>
+                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #d97706, #f59e0b)')" class="h-8 rounded border hover:border-yellow-600" style="background: linear-gradient(135deg, #d97706, #f59e0b)"></button>
+                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #92400e, #b45309)')" class="h-8 rounded border hover:border-yellow-600" style="background: linear-gradient(135deg, #92400e, #b45309)"></button>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Tema Islamik Biru Turki -->
+                                    <div class="border rounded-lg p-3 hover:shadow-md transition-shadow">
+                                        <div class="flex items-center gap-3 mb-2">
+                                            <div class="w-8 h-8 rounded-full" style="background: linear-gradient(135deg, #0369a1, #0284c7)"></div>
+                                            <span class="font-medium text-gray-800">🌙 Tema Islamik - Biru Turki</span>
+                                        </div>
+                                        <div class="grid grid-cols-3 gap-1">
+                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #f0f9ff, #e0f2fe)')" class="h-8 rounded border hover:border-blue-600" style="background: linear-gradient(135deg, #f0f9ff, #e0f2fe)"></button>
+                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #0369a1, #0284c7)')" class="h-8 rounded border hover:border-blue-600" style="background: linear-gradient(135deg, #0369a1, #0284c7)"></button>
+                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #0c4a6e, #075985)')" class="h-8 rounded border hover:border-blue-600" style="background: linear-gradient(135deg, #0c4a6e, #075985)"></button>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Tema Islamik Maroon -->
+                                    <div class="border rounded-lg p-3 hover:shadow-md transition-shadow">
+                                        <div class="flex items-center gap-3 mb-2">
+                                            <div class="w-8 h-8 rounded-full" style="background: linear-gradient(135deg, #991b1b, #dc2626)"></div>
+                                            <span class="font-medium text-gray-800">🏛️ Tema Islamik - Maroon Mewah</span>
+                                        </div>
+                                        <div class="grid grid-cols-3 gap-1">
+                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #fef2f2, #fecaca)')" class="h-8 rounded border hover:border-red-600" style="background: linear-gradient(135deg, #fef2f2, #fecaca)"></button>
+                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #991b1b, #dc2626)')" class="h-8 rounded border hover:border-red-600" style="background: linear-gradient(135deg, #991b1b, #dc2626)"></button>
+                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #7f1d1d, #991b1b)')" class="h-8 rounded border hover:border-red-600" style="background: linear-gradient(135deg, #7f1d1d, #991b1b)"></button>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Tema Islamik Putih Suci -->
+                                    <div class="border rounded-lg p-3 hover:shadow-md transition-shadow">
+                                        <div class="flex items-center gap-3 mb-2">
+                                            <div class="w-8 h-8 rounded-full" style="background: linear-gradient(135deg, #f8fafc, #e2e8f0)"></div>
+                                            <span class="font-medium text-gray-800">🤍 Tema Islamik - Putih Suci</span>
+                                        </div>
+                                        <div class="grid grid-cols-3 gap-1">
+                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #ffffff, #f8fafc)')" class="h-8 rounded border hover:border-gray-400" style="background: linear-gradient(135deg, #ffffff, #f8fafc)"></button>
+                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #f8fafc, #e2e8f0)')" class="h-8 rounded border hover:border-gray-400" style="background: linear-gradient(135deg, #f8fafc, #e2e8f0)"></button>
+                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #e2e8f0, #cbd5e1)')" class="h-8 rounded border hover:border-gray-400" style="background: linear-gradient(135deg, #e2e8f0, #cbd5e1)"></button>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Template Corak Islamik -->
+                                    <div class="border rounded-lg p-3 hover:shadow-md transition-shadow">
+                                        <div class="flex items-center gap-3 mb-2">
+                                            <div class="w-8 h-8 rounded-full bg-gradient-to-br from-green-600 to-yellow-500"></div>
+                                            <span class="font-medium text-gray-800">🎨 Template Corak Islamik</span>
+                                        </div>
+                                        <div class="grid grid-cols-2 gap-2">
+                                            <button type="button" onclick="setIslamicPattern('geometric')" class="h-12 rounded border hover:border-green-500 bg-gradient-to-br from-green-50 to-green-100 flex items-center justify-center text-xs font-medium">
+                                                Corak Geometri
+                                            </button>
+                                            <button type="button" onclick="setIslamicPattern('arabesque')" class="h-12 rounded border hover:border-blue-500 bg-gradient-to-br from-blue-50 to-blue-100 flex items-center justify-center text-xs font-medium">
+                                                Corak Arabesque
+                                            </button>
+                                            <button type="button" onclick="setIslamicPattern('calligraphy')" class="h-12 rounded border hover:border-yellow-500 bg-gradient-to-br from-yellow-50 to-yellow-100 flex items-center justify-center text-xs font-medium">
+                                                Kaligrafi
+                                            </button>
+                                            <button type="button" onclick="setIslamicPattern('mosque')" class="h-12 rounded border hover:border-purple-500 bg-gradient-to-br from-purple-50 to-purple-100 flex items-center justify-center text-xs font-medium">
+                                                Siluet Masjid
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="flex gap-4">
+                            <button type="submit" class="flex-1 bg-orange-600 hover:bg-orange-700 text-white font-bold py-3 px-6 rounded-lg transition-colors">
+                                Simpan Perubahan
+                            </button>
+                            <button type="button" onclick="closeHomeEditor()" class="flex-1 bg-gray-600 hover:bg-gray-700 text-white font-bold py-3 px-6 rounded-lg transition-colors">
+                                Batal
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Booking Page -->
+        <div id="booking-page" class="page hidden fade-in">
+            <div class="max-w-2xl mx-auto">
+                <div class="bg-white/90 backdrop-blur-sm rounded-xl shadow-lg p-8">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">📝 Borang Tempahan Bilik</h2>
+                    
+                    <form id="booking-form" class="space-y-6">
+                        <div>
+                            <label for="teacher-name" class="block text-sm font-medium text-gray-700 mb-2">Nama Guru *</label>
+                            <input type="text" id="teacher-name" name="teacherName" required 
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 bg-white/80">
+                        </div>
+
+                        <div>
+                            <label for="class-name" class="block text-sm font-medium text-gray-700 mb-2">Matapelajaran / Kelas *</label>
+                            <input type="text" id="class-name" name="className" required 
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 bg-white/80"
+                                   placeholder="Contoh: Matematik 4 Sains 1, Sejarah 5 Akaun 2">
+                        </div>
+
+                        <div>
+                            <label for="purpose" class="block text-sm font-medium text-gray-700 mb-2">Tujuan Penggunaan *</label>
+                            <textarea id="purpose" name="purpose" required rows="3"
+                                      class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 bg-white/80"
+                                      placeholder="Contoh: Pembelajaran ICT, Projek multimedia, Ujian online"></textarea>
+                        </div>
+
+                        <div class="grid md:grid-cols-2 gap-4">
+                            <div>
+                                <label for="day" class="block text-sm font-medium text-gray-700 mb-2">Hari *</label>
+                                <select id="day" name="day" required onchange="checkAvailability()"
+                                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 bg-white/80">
+                                    <option value="">Pilih Hari</option>
+                                    <option value="Isnin">Isnin</option>
+                                    <option value="Selasa">Selasa</option>
+                                    <option value="Rabu">Rabu</option>
+                                    <option value="Khamis">Khamis</option>
+                                    <option value="Jumaat">Jumaat</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label for="category" class="block text-sm font-medium text-gray-700 mb-2">Sesi (Kategori Pelajar) *</label>
+                                <select id="category" name="category" required onchange="updateTimeSlots()"
+                                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 bg-white/80">
+                                    <option value="">Pilih Sesi</option>
+                                    <option value="menengah-bawah">Menengah Bawah</option>
+                                    <option value="menengah-atas">Menengah Atas</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label for="time-slot" class="block text-sm font-medium text-gray-700 mb-2">Masa *</label>
+                            <select id="time-slot" name="timeSlot" required
+                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 bg-white/80">
+                                <option value="">Pilih sesi terlebih dahulu</option>
+                            </select>
+                            <div id="availability-status" class="mt-2 text-sm"></div>
+                        </div>
+
+                        <div id="custom-time-section" class="hidden">
+                            <label for="custom-time" class="block text-sm font-medium text-gray-700 mb-2">Masa Lain-lain</label>
+                            <input type="text" id="custom-time" name="customTime" 
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 bg-white/80"
+                                   placeholder="Contoh: 2:00-3:00 petang, 3:00-4:00 petang">
+                        </div>
+
+                        <div>
+                            <label for="email" class="block text-sm font-medium text-gray-700 mb-2">Email (Opsyenal)</label>
+                            <input type="email" id="email" name="email"
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 bg-white/80"
+                                   placeholder="Untuk notifikasi pengesahan">
+                        </div>
+
+                        <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-4 px-6 rounded-lg transition-colors transform hover:scale-105">
+                            📝 Hantar Tempahan
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Schedule Page -->
+        <div id="schedule-page" class="page hidden fade-in">
+            <div class="max-w-7xl mx-auto">
+                <div class="bg-white/90 backdrop-blur-sm rounded-xl shadow-lg p-8">
+                    <div class="flex flex-col md:flex-row justify-between items-center mb-6">
+                        <h2 class="text-2xl font-bold text-gray-800 mb-4 md:mb-0">📅 Jadual Tempahan Mingguan</h2>
+                        <div class="flex gap-2">
+                            <button onclick="refreshSchedule()" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg font-semibold transition-colors">
+                                🔄 Refresh
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4 flex flex-wrap gap-4 justify-center">
+                        <div class="flex items-center gap-2">
+                            <div class="w-4 h-4 slot-available rounded"></div>
+                            <span class="text-sm font-medium">Kosong</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <div class="w-4 h-4 slot-booked rounded"></div>
+                            <span class="text-sm font-medium">Ditempah</span>
+                        </div>
+                    </div>
+
+                    <div class="mb-4 text-center">
+                        <h3 class="text-lg font-semibold text-gray-700" id="week-dates">Minggu: </h3>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full border-collapse border border-gray-300 bg-white rounded-lg overflow-hidden">
+                            <thead>
+                                <tr class="bg-gradient-to-r from-gray-100 to-gray-200">
+                                    <th class="border border-gray-300 px-4 py-3 text-left font-semibold text-gray-800 min-w-[100px]">Hari</th>
+                                    <th class="border border-gray-300 px-4 py-3 text-center font-semibold text-gray-800 min-w-[120px]">7:00-8:00</th>
+                                    <th class="border border-gray-300 px-4 py-3 text-center font-semibold text-gray-800 min-w-[120px]">8:00-9:00</th>
+                                    <th class="border border-gray-300 px-4 py-3 text-center font-semibold text-gray-800 min-w-[120px]">9:00-10:00</th>
+                                    <th class="border border-gray-300 px-4 py-3 text-center font-semibold text-gray-800 min-w-[120px]">10:30-11:30</th>
+                                    <th class="border border-gray-300 px-4 py-3 text-center font-semibold text-gray-800 min-w-[120px]">11:30-12:30</th>
+                                    <th class="border border-gray-300 px-4 py-3 text-center font-semibold text-gray-800 min-w-[120px]">12:30-1:30</th>
+                                    <th id="custom-time-header" class="border border-gray-300 px-4 py-3 text-center font-semibold text-gray-800 min-w-[120px] hidden">2:00-6:00 Petang</th>
+                                </tr>
+                            </thead>
+                            <tbody id="schedule-table">
+                                <!-- Schedule will be populated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Schedule Summary -->
+                    <div class="mt-6 grid grid-cols-2 md:grid-cols-5 gap-4" id="weekday-summary">
+                        <div class="bg-green-100 p-4 rounded-lg text-center">
+                            <div class="text-lg font-bold text-green-800" id="monday-count">0</div>
+                            <div class="text-sm text-green-600">Isnin</div>
+                        </div>
+                        <div class="bg-blue-100 p-4 rounded-lg text-center">
+                            <div class="text-lg font-bold text-blue-800" id="tuesday-count">0</div>
+                            <div class="text-sm text-blue-600">Selasa</div>
+                        </div>
+                        <div class="bg-purple-100 p-4 rounded-lg text-center">
+                            <div class="text-lg font-bold text-purple-800" id="wednesday-count">0</div>
+                            <div class="text-sm text-purple-600">Rabu</div>
+                        </div>
+                        <div class="bg-orange-100 p-4 rounded-lg text-center">
+                            <div class="text-lg font-bold text-orange-800" id="thursday-count">0</div>
+                            <div class="text-sm text-orange-600">Khamis</div>
+                        </div>
+                        <div class="bg-red-100 p-4 rounded-lg text-center">
+                            <div class="text-lg font-bold text-red-800" id="friday-count">0</div>
+                            <div class="text-sm text-red-600">Jumaat</div>
+                        </div>
+                    </div>
+                    <div class="mt-6 grid grid-cols-2 gap-4 hidden" id="weekend-summary">
+                        <div class="bg-indigo-100 p-4 rounded-lg text-center">
+                            <div class="text-lg font-bold text-indigo-800" id="saturday-count">0</div>
+                            <div class="text-sm text-indigo-600">Sabtu</div>
+                        </div>
+                        <div class="bg-pink-100 p-4 rounded-lg text-center">
+                            <div class="text-lg font-bold text-pink-800" id="sunday-count">0</div>
+                            <div class="text-sm text-pink-600">Ahad</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Homepage Editor Modal (Admin Only) -->
+            <div id="home-editor-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+                <div class="bg-white rounded-xl p-8 max-w-2xl mx-4 w-full max-h-[90vh] overflow-y-auto">
+                    <h3 class="text-xl font-bold text-gray-800 mb-6">✏️ Edit Homepage</h3>
+                    
+                    <form id="home-editor-form" class="space-y-6">
+                        <div>
+                            <label for="edit-title" class="block text-sm font-medium text-gray-700 mb-2">Tajuk Utama</label>
+                            <input type="text" id="edit-title" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500">
+                        </div>
+                        
+                        <div>
+                            <label for="edit-description" class="block text-sm font-medium text-gray-700 mb-2">Penerangan</label>
+                            <textarea id="edit-description" rows="3" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"></textarea>
+                        </div>
+                        
+                        <div>
+                            <label for="logo-upload" class="block text-sm font-medium text-gray-700 mb-2">Logo Sekolah</label>
+                            <input type="file" id="logo-upload" accept="image/*" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500">
+                            <p class="text-sm text-gray-500 mt-1">Format: JPG, PNG, GIF (Maksimum: 2MB)</p>
+                            <button type="button" onclick="removeLogo()" class="mt-2 text-red-600 hover:text-red-800 text-sm">Buang Logo</button>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Latar Belakang Homepage</label>
+                            <div class="mb-4">
+                                <label for="bg-upload" class="block text-sm font-medium text-gray-700 mb-2">Muat Naik Gambar/GIF Latar Belakang</label>
+                                <input type="file" id="bg-upload" accept="image/*,.gif" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500">
+                                <p class="text-sm text-gray-500 mt-1">Format: JPG, PNG, GIF (Maksimum: 5MB)</p>
+                                <button type="button" onclick="removeCustomBg()" class="mt-2 text-red-600 hover:text-red-800 text-sm">Buang Gambar Latar Belakang</button>
+                            </div>
+                            
+                            <!-- Tema Menarik -->
+                            <div class="mb-4">
+                                <h4 class="text-sm font-medium text-gray-700 mb-3">🎨 Tema Menarik</h4>
+                                <div class="grid grid-cols-1 gap-3">
+                                    <!-- Tema Hijau Segar -->
+                                    <div class="border rounded-lg p-3 hover:shadow-md transition-shadow">
+                                        <div class="flex items-center gap-3 mb-2">
+                                            <div class="w-8 h-8 rounded-full" style="background: linear-gradient(135deg, #10b981, #34d399)"></div>
+                                            <span class="font-medium text-gray-800">🌿 Hijau Segar</span>
+                                        </div>
+                                        <div class="grid grid-cols-3 gap-1">
+                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #ecfdf5, #d1fae5)')" class="h-8 rounded border hover:border-green-500" style="background: linear-gradient(135deg, #ecfdf5, #d1fae5)"></button>
+                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #10b981, #34d399)')" class="h-8 rounded border hover:border-green-500" style="background: linear-gradient(135deg, #10b981, #34d399)"></button>
+                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #065f46, #047857)')" class="h-8 rounded border hover:border-green-500" style="background: linear-gradient(135deg, #065f46, #047857)"></button>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Tema Biru Laut -->
+                                    <div class="border rounded-lg p-3 hover:shadow-md transition-shadow">
+                                        <div class="flex items-center gap-3 mb-2">
+                                            <div class="w-8 h-8 rounded-full" style="background: linear-gradient(135deg, #0ea5e9, #38bdf8)"></div>
+                                            <span class="font-medium text-gray-800">🌊 Biru Laut</span>
+                                        </div>
+                                        <div class="grid grid-cols-3 gap-1">
+                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #f0f9ff, #e0f2fe)')" class="h-8 rounded border hover:border-blue-500" style="background: linear-gradient(135deg, #f0f9ff, #e0f2fe)"></button>
+                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #0ea5e9, #38bdf8)')" class="h-8 rounded border hover:border-blue-500" style="background: linear-gradient(135deg, #0ea5e9, #38bdf8)"></button>
+                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #0c4a6e, #075985)')" class="h-8 rounded border hover:border-blue-500" style="background: linear-gradient(135deg, #0c4a6e, #075985)"></button>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Tema Ungu Mewah -->
+                                    <div class="border rounded-lg p-3 hover:shadow-md transition-shadow">
+                                        <div class="flex items-center gap-3 mb-2">
+                                            <div class="w-8 h-8 rounded-full" style="background: linear-gradient(135deg, #8b5cf6, #a78bfa)"></div>
+                                            <span class="font-medium text-gray-800">💜 Ungu Mewah</span>
+                                        </div>
+                                        <div class="grid grid-cols-3 gap-1">
+                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #faf5ff, #f3e8ff)')" class="h-8 rounded border hover:border-purple-500" style="background: linear-gradient(135deg, #faf5ff, #f3e8ff)"></button>
+                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #8b5cf6, #a78bfa)')" class="h-8 rounded border hover:border-purple-500" style="background: linear-gradient(135deg, #8b5cf6, #a78bfa)"></button>
+                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #581c87, #6b21a8)')" class="h-8 rounded border hover:border-purple-500" style="background: linear-gradient(135deg, #581c87, #6b21a8)"></button>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Tema Oren Hangat -->
+                                    <div class="border rounded-lg p-3 hover:shadow-md transition-shadow">
+                                        <div class="flex items-center gap-3 mb-2">
+                                            <div class="w-8 h-8 rounded-full" style="background: linear-gradient(135deg, #f97316, #fb923c)"></div>
+                                            <span class="font-medium text-gray-800">🔥 Oren Hangat</span>
+                                        </div>
+                                        <div class="grid grid-cols-3 gap-1">
+                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #fff7ed, #fed7aa)')" class="h-8 rounded border hover:border-orange-500" style="background: linear-gradient(135deg, #fff7ed, #fed7aa)"></button>
+                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #f97316, #fb923c)')" class="h-8 rounded border hover:border-orange-500" style="background: linear-gradient(135deg, #f97316, #fb923c)"></button>
+                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #9a3412, #c2410c)')" class="h-8 rounded border hover:border-orange-500" style="background: linear-gradient(135deg, #9a3412, #c2410c)"></button>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Tema Merah Jambu Lembut -->
+                                    <div class="border rounded-lg p-3 hover:shadow-md transition-shadow">
+                                        <div class="flex items-center gap-3 mb-2">
+                                            <div class="w-8 h-8 rounded-full" style="background: linear-gradient(135deg, #ec4899, #f472b6)"></div>
+                                            <span class="font-medium text-gray-800">🌸 Merah Jambu Lembut</span>
+                                        </div>
+                                        <div class="grid grid-cols-3 gap-1">
+                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #fdf2f8, #fce7f3)')" class="h-8 rounded border hover:border-pink-500" style="background: linear-gradient(135deg, #fdf2f8, #fce7f3)"></button>
+                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #ec4899, #f472b6)')" class="h-8 rounded border hover:border-pink-500" style="background: linear-gradient(135deg, #ec4899, #f472b6)"></button>
+                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #831843, #be185d)')" class="h-8 rounded border hover:border-pink-500" style="background: linear-gradient(135deg, #831843, #be185d)"></button>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Tema Islamik -->
+                                    <div class="border rounded-lg p-3 hover:shadow-md transition-shadow">
+                                        <div class="flex items-center gap-3 mb-2">
+                                            <div class="w-8 h-8 rounded-full" style="background: linear-gradient(135deg, #059669, #10b981)"></div>
+                                            <span class="font-medium text-gray-800">🕌 Tema Islamik - Hijau Masjid</span>
+                                        </div>
+                                        <div class="grid grid-cols-3 gap-1">
+                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #f0fdf4, #dcfce7)')" class="h-8 rounded border hover:border-green-600" style="background: linear-gradient(135deg, #f0fdf4, #dcfce7)"></button>
+                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #059669, #10b981)')" class="h-8 rounded border hover:border-green-600" style="background: linear-gradient(135deg, #059669, #10b981)"></button>
+                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #064e3b, #065f46)')" class="h-8 rounded border hover:border-green-600" style="background: linear-gradient(135deg, #064e3b, #065f46)"></button>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Tema Islamik Emas -->
+                                    <div class="border rounded-lg p-3 hover:shadow-md transition-shadow">
+                                        <div class="flex items-center gap-3 mb-2">
+                                            <div class="w-8 h-8 rounded-full" style="background: linear-gradient(135deg, #d97706, #f59e0b)"></div>
+                                            <span class="font-medium text-gray-800">✨ Tema Islamik - Emas Klasik</span>
+                                        </div>
+                                        <div class="grid grid-cols-3 gap-1">
+                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #fffbeb, #fef3c7)')" class="h-8 rounded border hover:border-yellow-600" style="background: linear-gradient(135deg, #fffbeb, #fef3c7)"></button>
+                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #d97706, #f59e0b)')" class="h-8 rounded border hover:border-yellow-600" style="background: linear-gradient(135deg, #d97706, #f59e0b)"></button>
+                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #92400e, #b45309)')" class="h-8 rounded border hover:border-yellow-600" style="background: linear-gradient(135deg, #92400e, #b45309)"></button>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Tema Islamik Biru Turki -->
+                                    <div class="border rounded-lg p-3 hover:shadow-md transition-shadow">
+                                        <div class="flex items-center gap-3 mb-2">
+                                            <div class="w-8 h-8 rounded-full" style="background: linear-gradient(135deg, #0369a1, #0284c7)"></div>
+                                            <span class="font-medium text-gray-800">🌙 Tema Islamik - Biru Turki</span>
+                                        </div>
+                                        <div class="grid grid-cols-3 gap-1">
+                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #f0f9ff, #e0f2fe)')" class="h-8 rounded border hover:border-blue-600" style="background: linear-gradient(135deg, #f0f9ff, #e0f2fe)"></button>
+                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #0369a1, #0284c7)')" class="h-8 rounded border hover:border-blue-600" style="background: linear-gradient(135deg, #0369a1, #0284c7)"></button>
+                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #0c4a6e, #075985)')" class="h-8 rounded border hover:border-blue-600" style="background: linear-gradient(135deg, #0c4a6e, #075985)"></button>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Tema Islamik Maroon -->
+                                    <div class="border rounded-lg p-3 hover:shadow-md transition-shadow">
+                                        <div class="flex items-center gap-3 mb-2">
+                                            <div class="w-8 h-8 rounded-full" style="background: linear-gradient(135deg, #991b1b, #dc2626)"></div>
+                                            <span class="font-medium text-gray-800">🏛️ Tema Islamik - Maroon Mewah</span>
+                                        </div>
+                                        <div class="grid grid-cols-3 gap-1">
+                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #fef2f2, #fecaca)')" class="h-8 rounded border hover:border-red-600" style="background: linear-gradient(135deg, #fef2f2, #fecaca)"></button>
+                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #991b1b, #dc2626)')" class="h-8 rounded border hover:border-red-600" style="background: linear-gradient(135deg, #991b1b, #dc2626)"></button>
+                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #7f1d1d, #991b1b)')" class="h-8 rounded border hover:border-red-600" style="background: linear-gradient(135deg, #7f1d1d, #991b1b)"></button>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Tema Islamik Putih Suci -->
+                                    <div class="border rounded-lg p-3 hover:shadow-md transition-shadow">
+                                        <div class="flex items-center gap-3 mb-2">
+                                            <div class="w-8 h-8 rounded-full" style="background: linear-gradient(135deg, #f8fafc, #e2e8f0)"></div>
+                                            <span class="font-medium text-gray-800">🤍 Tema Islamik - Putih Suci</span>
+                                        </div>
+                                        <div class="grid grid-cols-3 gap-1">
+                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #ffffff, #f8fafc)')" class="h-8 rounded border hover:border-gray-400" style="background: linear-gradient(135deg, #ffffff, #f8fafc)"></button>
+                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #f8fafc, #e2e8f0)')" class="h-8 rounded border hover:border-gray-400" style="background: linear-gradient(135deg, #f8fafc, #e2e8f0)"></button>
+                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #e2e8f0, #cbd5e1)')" class="h-8 rounded border hover:border-gray-400" style="background: linear-gradient(135deg, #e2e8f0, #cbd5e1)"></button>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Template Corak Islamik -->
+                                    <div class="border rounded-lg p-3 hover:shadow-md transition-shadow">
+                                        <div class="flex items-center gap-3 mb-2">
+                                            <div class="w-8 h-8 rounded-full bg-gradient-to-br from-green-600 to-yellow-500"></div>
+                                            <span class="font-medium text-gray-800">🎨 Template Corak Islamik</span>
+                                        </div>
+                                        <div class="grid grid-cols-2 gap-2">
+                                            <button type="button" onclick="setIslamicPattern('geometric')" class="h-12 rounded border hover:border-green-500 bg-gradient-to-br from-green-50 to-green-100 flex items-center justify-center text-xs font-medium">
+                                                Corak Geometri
+                                            </button>
+                                            <button type="button" onclick="setIslamicPattern('arabesque')" class="h-12 rounded border hover:border-blue-500 bg-gradient-to-br from-blue-50 to-blue-100 flex items-center justify-center text-xs font-medium">
+                                                Corak Arabesque
+                                            </button>
+                                            <button type="button" onclick="setIslamicPattern('calligraphy')" class="h-12 rounded border hover:border-yellow-500 bg-gradient-to-br from-yellow-50 to-yellow-100 flex items-center justify-center text-xs font-medium">
+                                                Kaligrafi
+                                            </button>
+                                            <button type="button" onclick="setIslamicPattern('mosque')" class="h-12 rounded border hover:border-purple-500 bg-gradient-to-br from-purple-50 to-purple-100 flex items-center justify-center text-xs font-medium">
+                                                Siluet Masjid
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="flex gap-4">
+                            <button type="submit" class="flex-1 bg-orange-600 hover:bg-orange-700 text-white font-bold py-3 px-6 rounded-lg transition-colors">
+                                Simpan Perubahan
+                            </button>
+                            <button type="button" onclick="closeHomeEditor()" class="flex-1 bg-gray-600 hover:bg-gray-700 text-white font-bold py-3 px-6 rounded-lg transition-colors">
+                                Batal
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Admin Page -->
+        <div id="admin-page" class="page hidden fade-in">
+            <div class="max-w-7xl mx-auto">
+                <!-- Admin Login -->
+                <div id="admin-login" class="max-w-md mx-auto bg-white/90 backdrop-blur-sm rounded-xl shadow-lg p-8">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">🔐 Log Masuk Pentadbir</h2>
+                    <form id="login-form" class="space-y-4">
+                        <div>
+                            <label for="admin-username" class="block text-sm font-medium text-gray-700 mb-2">Nama Pengguna</label>
+                            <input type="text" id="admin-username" required 
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-white/80">
+                        </div>
+                        <div>
+                            <label for="admin-password" class="block text-sm font-medium text-gray-700 mb-2">Kata Laluan</label>
+                            <input type="password" id="admin-password" required 
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-white/80">
+                        </div>
+                        <button type="submit" class="w-full bg-orange-600 hover:bg-orange-700 text-white font-bold py-3 px-6 rounded-lg transition-colors">
+                            Masuk
+                        </button>
+                    </form>
+                    <div class="mt-4 text-center text-sm text-gray-600">
+                        Demo: admin / admin123
+                    </div>
+                </div>
+
+                <!-- Admin Panel -->
+                <div id="admin-panel" class="hidden bg-white/90 backdrop-blur-sm rounded-xl shadow-lg p-8">
+                    <div class="flex flex-col md:flex-row justify-between items-center mb-6">
+                        <h2 class="text-2xl font-bold text-gray-800 mb-4 md:mb-0">⚙️ Panel Pentadbir</h2>
+                        <button onclick="logoutAdmin()" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-semibold transition-colors">
+                            Keluar
+                        </button>
+                    </div>
+                    
+                    <div class="mb-6 flex flex-wrap gap-4 justify-center">
+                        <button onclick="exportData()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-semibold transition-colors">
+                            📊 Eksport CSV
+                        </button>
+                        <button onclick="exportPDF()" class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg font-semibold transition-colors">
+                            📄 Eksport PDF
+                        </button>
+                        <button onclick="saveSchedulePDF()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-lg font-semibold transition-colors">
+                            📥 Muat Turun Jadual PDF
+                        </button>
+                        <button onclick="clearAllBookings()" class="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-lg font-semibold transition-colors">
+                            🗑️ Padam Semua
+                        </button>
+                        <button onclick="sendEmailNotifications()" class="bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 rounded-lg font-semibold transition-colors">
+                            📧 Hantar Email
+                        </button>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full border-collapse border border-gray-300 bg-white rounded-lg overflow-hidden">
+                            <thead>
+                                <tr class="bg-gradient-to-r from-gray-100 to-gray-200">
+                                    <th class="border border-gray-300 px-4 py-3 text-left font-semibold">ID</th>
+                                    <th class="border border-gray-300 px-4 py-3 text-left font-semibold">Nama Guru</th>
+                                    <th class="border border-gray-300 px-4 py-3 text-left font-semibold">Matapelajaran/Kelas</th>
+                                    <th class="border border-gray-300 px-4 py-3 text-left font-semibold">Hari</th>
+                                    <th class="border border-gray-300 px-4 py-3 text-left font-semibold">Masa</th>
+                                    <th class="border border-gray-300 px-4 py-3 text-left font-semibold">Tujuan</th>
+                                    <th class="border border-gray-300 px-4 py-3 text-left font-semibold">Email</th>
+                                    <th class="border border-gray-300 px-4 py-3 text-left font-semibold">Tarikh</th>
+                                    <th class="border border-gray-300 px-4 py-3 text-center font-semibold">Tindakan</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-table">
+                                <!-- Admin data will be populated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Homepage Editor Modal (Admin Only) -->
+            <div id="home-editor-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+                <div class="bg-white rounded-xl p-8 max-w-2xl mx-4 w-full max-h-[90vh] overflow-y-auto">
+                    <h3 class="text-xl font-bold text-gray-800 mb-6">✏️ Edit Homepage</h3>
+                    
+                    <form id="home-editor-form" class="space-y-6">
+                        <div>
+                            <label for="edit-title" class="block text-sm font-medium text-gray-700 mb-2">Tajuk Utama</label>
+                            <input type="text" id="edit-title" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500">
+                        </div>
+                        
+                        <div>
+                            <label for="edit-description" class="block text-sm font-medium text-gray-700 mb-2">Penerangan</label>
+                            <textarea id="edit-description" rows="3" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"></textarea>
+                        </div>
+                        
+                        <div>
+                            <label for="logo-upload" class="block text-sm font-medium text-gray-700 mb-2">Logo Sekolah</label>
+                            <input type="file" id="logo-upload" accept="image/*" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500">
+                            <p class="text-sm text-gray-500 mt-1">Format: JPG, PNG, GIF (Maksimum: 2MB)</p>
+                            <button type="button" onclick="removeLogo()" class="mt-2 text-red-600 hover:text-red-800 text-sm">Buang Logo</button>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Latar Belakang Homepage</label>
+                            <div class="mb-4">
+                                <label for="bg-upload" class="block text-sm font-medium text-gray-700 mb-2">Muat Naik Gambar/GIF Latar Belakang</label>
+                                <input type="file" id="bg-upload" accept="image/*,.gif" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500">
+                                <p class="text-sm text-gray-500 mt-1">Format: JPG, PNG, GIF (Maksimum: 5MB)</p>
+                                <button type="button" onclick="removeCustomBg()" class="mt-2 text-red-600 hover:text-red-800 text-sm">Buang Gambar Latar Belakang</button>
+                            </div>
+                            
+                            <!-- Tema Menarik -->
+                            <div class="mb-4">
+                                <h4 class="text-sm font-medium text-gray-700 mb-3">🎨 Tema Menarik</h4>
+                                <div class="grid grid-cols-1 gap-3">
+                                    <!-- Tema Hijau Segar -->
+                                    <div class="border rounded-lg p-3 hover:shadow-md transition-shadow">
+                                        <div class="flex items-center gap-3 mb-2">
+                                            <div class="w-8 h-8 rounded-full" style="background: linear-gradient(135deg, #10b981, #34d399)"></div>
+                                            <span class="font-medium text-gray-800">🌿 Hijau Segar</span>
+                                        </div>
+                                        <div class="grid grid-cols-3 gap-1">
+                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #ecfdf5, #d1fae5)')" class="h-8 rounded border hover:border-green-500" style="background: linear-gradient(135deg, #ecfdf5, #d1fae5)"></button>
+                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #10b981, #34d399)')" class="h-8 rounded border hover:border-green-500" style="background: linear-gradient(135deg, #10b981, #34d399)"></button>
+                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #065f46, #047857)')" class="h-8 rounded border hover:border-green-500" style="background: linear-gradient(135deg, #065f46, #047857)"></button>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Tema Biru Laut -->
+                                    <div class="border rounded-lg p-3 hover:shadow-md transition-shadow">
+                                        <div class="flex items-center gap-3 mb-2">
+                                            <div class="w-8 h-8 rounded-full" style="background: linear-gradient(135deg, #0ea5e9, #38bdf8)"></div>
+                                            <span class="font-medium text-gray-800">🌊 Biru Laut</span>
+                                        </div>
+                                        <div class="grid grid-cols-3 gap-1">
+                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #f0f9ff, #e0f2fe)')" class="h-8 rounded border hover:border-blue-500" style="background: linear-gradient(135deg, #f0f9ff, #e0f2fe)"></button>
+                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #0ea5e9, #38bdf8)')" class="h-8 rounded border hover:border-blue-500" style="background: linear-gradient(135deg, #0ea5e9, #38bdf8)"></button>
+                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #0c4a6e, #075985)')" class="h-8 rounded border hover:border-blue-500" style="background: linear-gradient(135deg, #0c4a6e, #075985)"></button>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Tema Ungu Mewah -->
+                                    <div class="border rounded-lg p-3 hover:shadow-md transition-shadow">
+                                        <div class="flex items-center gap-3 mb-2">
+                                            <div class="w-8 h-8 rounded-full" style="background: linear-gradient(135deg, #8b5cf6, #a78bfa)"></div>
+                                            <span class="font-medium text-gray-800">💜 Ungu Mewah</span>
+                                        </div>
+                                        <div class="grid grid-cols-3 gap-1">
+                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #faf5ff, #f3e8ff)')" class="h-8 rounded border hover:border-purple-500" style="background: linear-gradient(135deg, #faf5ff, #f3e8ff)"></button>
+                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #8b5cf6, #a78bfa)')" class="h-8 rounded border hover:border-purple-500" style="background: linear-gradient(135deg, #8b5cf6, #a78bfa)"></button>
+                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #581c87, #6b21a8)')" class="h-8 rounded border hover:border-purple-500" style="background: linear-gradient(135deg, #581c87, #6b21a8)"></button>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Tema Oren Hangat -->
+                                    <div class="border rounded-lg p-3 hover:shadow-md transition-shadow">
+                                        <div class="flex items-center gap-3 mb-2">
+                                            <div class="w-8 h-8 rounded-full" style="background: linear-gradient(135deg, #f97316, #fb923c)"></div>
+                                            <span class="font-medium text-gray-800">🔥 Oren Hangat</span>
+                                        </div>
+                                        <div class="grid grid-cols-3 gap-1">
+                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #fff7ed, #fed7aa)')" class="h-8 rounded border hover:border-orange-500" style="background: linear-gradient(135deg, #fff7ed, #fed7aa)"></button>
+                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #f97316, #fb923c)')" class="h-8 rounded border hover:border-orange-500" style="background: linear-gradient(135deg, #f97316, #fb923c)"></button>
+                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #9a3412, #c2410c)')" class="h-8 rounded border hover:border-orange-500" style="background: linear-gradient(135deg, #9a3412, #c2410c)"></button>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Tema Merah Jambu Lembut -->
+                                    <div class="border rounded-lg p-3 hover:shadow-md transition-shadow">
+                                        <div class="flex items-center gap-3 mb-2">
+                                            <div class="w-8 h-8 rounded-full" style="background: linear-gradient(135deg, #ec4899, #f472b6)"></div>
+                                            <span class="font-medium text-gray-800">🌸 Merah Jambu Lembut</span>
+                                        </div>
+                                        <div class="grid grid-cols-3 gap-1">
+                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #fdf2f8, #fce7f3)')" class="h-8 rounded border hover:border-pink-500" style="background: linear-gradient(135deg, #fdf2f8, #fce7f3)"></button>
+                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #ec4899, #f472b6)')" class="h-8 rounded border hover:border-pink-500" style="background: linear-gradient(135deg, #ec4899, #f472b6)"></button>
+                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #831843, #be185d)')" class="h-8 rounded border hover:border-pink-500" style="background: linear-gradient(135deg, #831843, #be185d)"></button>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Tema Islamik -->
+                                    <div class="border rounded-lg p-3 hover:shadow-md transition-shadow">
+                                        <div class="flex items-center gap-3 mb-2">
+                                            <div class="w-8 h-8 rounded-full" style="background: linear-gradient(135deg, #059669, #10b981)"></div>
+                                            <span class="font-medium text-gray-800">🕌 Tema Islamik - Hijau Masjid</span>
+                                        </div>
+                                        <div class="grid grid-cols-3 gap-1">
+                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #f0fdf4, #dcfce7)')" class="h-8 rounded border hover:border-green-600" style="background: linear-gradient(135deg, #f0fdf4, #dcfce7)"></button>
+                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #059669, #10b981)')" class="h-8 rounded border hover:border-green-600" style="background: linear-gradient(135deg, #059669, #10b981)"></button>
+                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #064e3b, #065f46)')" class="h-8 rounded border hover:border-green-600" style="background: linear-gradient(135deg, #064e3b, #065f46)"></button>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Tema Islamik Emas -->
+                                    <div class="border rounded-lg p-3 hover:shadow-md transition-shadow">
+                                        <div class="flex items-center gap-3 mb-2">
+                                            <div class="w-8 h-8 rounded-full" style="background: linear-gradient(135deg, #d97706, #f59e0b)"></div>
+                                            <span class="font-medium text-gray-800">✨ Tema Islamik - Emas Klasik</span>
+                                        </div>
+                                        <div class="grid grid-cols-3 gap-1">
+                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #fffbeb, #fef3c7)')" class="h-8 rounded border hover:border-yellow-600" style="background: linear-gradient(135deg, #fffbeb, #fef3c7)"></button>
+                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #d97706, #f59e0b)')" class="h-8 rounded border hover:border-yellow-600" style="background: linear-gradient(135deg, #d97706, #f59e0b)"></button>
+                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #92400e, #b45309)')" class="h-8 rounded border hover:border-yellow-600" style="background: linear-gradient(135deg, #92400e, #b45309)"></button>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Tema Islamik Biru Turki -->
+                                    <div class="border rounded-lg p-3 hover:shadow-md transition-shadow">
+                                        <div class="flex items-center gap-3 mb-2">
+                                            <div class="w-8 h-8 rounded-full" style="background: linear-gradient(135deg, #0369a1, #0284c7)"></div>
+                                            <span class="font-medium text-gray-800">🌙 Tema Islamik - Biru Turki</span>
+                                        </div>
+                                        <div class="grid grid-cols-3 gap-1">
+                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #f0f9ff, #e0f2fe)')" class="h-8 rounded border hover:border-blue-600" style="background: linear-gradient(135deg, #f0f9ff, #e0f2fe)"></button>
+                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #0369a1, #0284c7)')" class="h-8 rounded border hover:border-blue-600" style="background: linear-gradient(135deg, #0369a1, #0284c7)"></button>
+                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #0c4a6e, #075985)')" class="h-8 rounded border hover:border-blue-600" style="background: linear-gradient(135deg, #0c4a6e, #075985)"></button>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Tema Islamik Maroon -->
+                                    <div class="border rounded-lg p-3 hover:shadow-md transition-shadow">
+                                        <div class="flex items-center gap-3 mb-2">
+                                            <div class="w-8 h-8 rounded-full" style="background: linear-gradient(135deg, #991b1b, #dc2626)"></div>
+                                            <span class="font-medium text-gray-800">🏛️ Tema Islamik - Maroon Mewah</span>
+                                        </div>
+                                        <div class="grid grid-cols-3 gap-1">
+                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #fef2f2, #fecaca)')" class="h-8 rounded border hover:border-red-600" style="background: linear-gradient(135deg, #fef2f2, #fecaca)"></button>
+                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #991b1b, #dc2626)')" class="h-8 rounded border hover:border-red-600" style="background: linear-gradient(135deg, #991b1b, #dc2626)"></button>
+                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #7f1d1d, #991b1b)')" class="h-8 rounded border hover:border-red-600" style="background: linear-gradient(135deg, #7f1d1d, #991b1b)"></button>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Tema Islamik Putih Suci -->
+                                    <div class="border rounded-lg p-3 hover:shadow-md transition-shadow">
+                                        <div class="flex items-center gap-3 mb-2">
+                                            <div class="w-8 h-8 rounded-full" style="background: linear-gradient(135deg, #f8fafc, #e2e8f0)"></div>
+                                            <span class="font-medium text-gray-800">🤍 Tema Islamik - Putih Suci</span>
+                                        </div>
+                                        <div class="grid grid-cols-3 gap-1">
+                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #ffffff, #f8fafc)')" class="h-8 rounded border hover:border-gray-400" style="background: linear-gradient(135deg, #ffffff, #f8fafc)"></button>
+                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #f8fafc, #e2e8f0)')" class="h-8 rounded border hover:border-gray-400" style="background: linear-gradient(135deg, #f8fafc, #e2e8f0)"></button>
+                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #e2e8f0, #cbd5e1)')" class="h-8 rounded border hover:border-gray-400" style="background: linear-gradient(135deg, #e2e8f0, #cbd5e1)"></button>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Template Corak Islamik -->
+                                    <div class="border rounded-lg p-3 hover:shadow-md transition-shadow">
+                                        <div class="flex items-center gap-3 mb-2">
+                                            <div class="w-8 h-8 rounded-full bg-gradient-to-br from-green-600 to-yellow-500"></div>
+                                            <span class="font-medium text-gray-800">🎨 Template Corak Islamik</span>
+                                        </div>
+                                        <div class="grid grid-cols-2 gap-2">
+                                            <button type="button" onclick="setIslamicPattern('geometric')" class="h-12 rounded border hover:border-green-500 bg-gradient-to-br from-green-50 to-green-100 flex items-center justify-center text-xs font-medium">
+                                                Corak Geometri
+                                            </button>
+                                            <button type="button" onclick="setIslamicPattern('arabesque')" class="h-12 rounded border hover:border-blue-500 bg-gradient-to-br from-blue-50 to-blue-100 flex items-center justify-center text-xs font-medium">
+                                                Corak Arabesque
+                                            </button>
+                                            <button type="button" onclick="setIslamicPattern('calligraphy')" class="h-12 rounded border hover:border-yellow-500 bg-gradient-to-br from-yellow-50 to-yellow-100 flex items-center justify-center text-xs font-medium">
+                                                Kaligrafi
+                                            </button>
+                                            <button type="button" onclick="setIslamicPattern('mosque')" class="h-12 rounded border hover:border-purple-500 bg-gradient-to-br from-purple-50 to-purple-100 flex items-center justify-center text-xs font-medium">
+                                                Siluet Masjid
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="flex gap-4">
+                            <button type="submit" class="flex-1 bg-orange-600 hover:bg-orange-700 text-white font-bold py-3 px-6 rounded-lg transition-colors">
+                                Simpan Perubahan
+                            </button>
+                            <button type="button" onclick="closeHomeEditor()" class="flex-1 bg-gray-600 hover:bg-gray-700 text-white font-bold py-3 px-6 rounded-lg transition-colors">
+                                Batal
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Success Modal -->
+        <div id="success-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+            <div class="bg-white rounded-xl p-8 max-w-md mx-4 text-center transform scale-95 transition-transform">
+                <div class="text-6xl mb-4">✅</div>
+                <h3 class="text-xl font-bold text-green-800 mb-4">Kemaskini Berjaya!</h3>
+                <p id="success-message" class="text-gray-600 mb-6"></p>
+                <button onclick="closeModal()" class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg font-semibold transition-colors">
+                    Tutup
+                </button>
+            </div>
+        </div>
+
+        <!-- Error Modal -->
+        <div id="error-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+            <div class="bg-white rounded-xl p-8 max-w-md mx-4 text-center transform scale-95 transition-transform">
+                <div class="text-6xl mb-4">❌</div>
+                <h3 class="text-xl font-bold text-red-800 mb-4">RALAT</h3>
+                <p id="error-message" class="text-gray-600 mb-6"></p>
+                <button onclick="closeModal()" class="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-lg font-semibold transition-colors">
+                    Tutup
+                </button>
+            </div>
+        </div>
+
+        <!-- Booking Details Modal -->
+        <div id="booking-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+            <div class="bg-white rounded-xl p-8 max-w-md mx-4">
+                <h3 class="text-xl font-bold text-gray-800 mb-4">📋 Maklumat Tempahan</h3>
+                <div id="booking-details" class="space-y-2 text-sm"></div>
+                <button onclick="closeBookingModal()" class="mt-4 bg-gray-600 hover:bg-gray-700 text-white px-6 py-2 rounded-lg font-semibold transition-colors">
+                    Tutup
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Copyright Footer -->
+    <footer class="text-center py-4 mt-8 no-print">
+        <p class="text-xs text-gray-500">©️ AI.ICTSMANIP</p>
+    </footer>
+
+    <script>
+        // Database simulation using localStorage
+        let bookings = JSON.parse(localStorage.getItem('smanip_bookings')) || [];
+        let nextId = parseInt(localStorage.getItem('smanip_next_id')) || 1;
+        let isAdminLoggedIn = false;
+
+        // Time slots for different categories
+        const timeSlots = {
+            'menengah-bawah': [
+                '7:00-8:00 pagi',
+                '8:00-9:00 pagi',
+                '10:30-11:30 pagi',
+                '11:30 pagi-12:30 tengah hari',
+                '12:30 tengah hari-1:30 petang'
+            ],
+            'menengah-atas': [
+                '7:00-8:00 pagi',
+                '8:00-9:00 pagi',
+                '9:00-10:00 pagi',
+                '10:30-11:30 pagi',
+                '11:30 pagi-12:30 tengah hari',
+                '12:30 tengah hari-1:30 petang'
+            ]
+        };
+
+        const days = ['Isnin', 'Selasa', 'Rabu', 'Khamis', 'Jumaat'];
+        const allDays = ['Isnin', 'Selasa', 'Rabu', 'Khamis', 'Jumaat', 'Sabtu', 'Ahad'];
+        const standardTimeSlots = ['7:00-8:00 pagi', '8:00-9:00 pagi', '9:00-10:00 pagi', '10:30-11:30 pagi', '11:30 pagi-12:30 tengah hari', '12:30 tengah hari-1:30 petang'];
+
+        // Background customizer
+        function toggleBgCustomizer() {
+            const options = document.getElementById('bg-options');
+            options.classList.toggle('hidden');
+        }
+
+        function changeBg(gradient) {
+            document.documentElement.style.setProperty('--custom-bg', gradient);
+            localStorage.setItem('smanip_bg', gradient);
+            document.getElementById('bg-options').classList.add('hidden');
+        }
+
+        // Show specific page
+        function showPage(pageId) {
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.add('hidden');
+            });
+            document.getElementById(pageId + '-page').classList.remove('hidden');
+            
+            if (pageId === 'home') {
+                updateStats();
+            } else if (pageId === 'schedule') {
+                renderSchedule();
+            } else if (pageId === 'admin') {
+                if (isAdminLoggedIn) {
+                    document.getElementById('admin-login').classList.add('hidden');
+                    document.getElementById('admin-panel').classList.remove('hidden');
+                    renderAdminTable();
+                } else {
+                    document.getElementById('admin-login').classList.remove('hidden');
+                    document.getElementById('admin-panel').classList.add('hidden');
+                }
+            }
+        }
+
+        // Update statistics
+        function updateStats() {
+            const totalBookings = bookings.length;
+            const today = new Date().toLocaleDateString('ms-MY');
+            const todayBookings = bookings.filter(b => b.bookingDate === today).length;
+            const totalSlots = days.length * 6; // 7 days × 6 time slots
+            const usageRate = totalSlots > 0 ? Math.round((totalBookings / totalSlots) * 100) : 0;
+            const availableSlots = totalSlots - totalBookings;
+
+            document.getElementById('total-bookings').textContent = totalBookings;
+            document.getElementById('today-bookings').textContent = todayBookings;
+            document.getElementById('available-slots').textContent = availableSlots;
+            document.getElementById('usage-rate').textContent = usageRate + '%';
+        }
+
+        // Update time slots based on category
+        function updateTimeSlots() {
+            const category = document.getElementById('category').value;
+            const timeSlotSelect = document.getElementById('time-slot');
+            
+            timeSlotSelect.innerHTML = '<option value="">Pilih Masa</option>';
+            
+            if (category && timeSlots[category]) {
+                // Add standard time slots
+                timeSlots[category].forEach(slot => {
+                    const option = document.createElement('option');
+                    option.value = slot;
+                    option.textContent = slot;
+                    timeSlotSelect.appendChild(option);
+                });
+                
+                // Add custom time option at the end
+                const customOption = document.createElement('option');
+                customOption.value = 'custom';
+                customOption.textContent = 'Lain-lain masa (custom)';
+                timeSlotSelect.appendChild(customOption);
+            }
+        }
+        
+        // Handle time slot change to show/hide custom time input
+        document.getElementById('time-slot').addEventListener('change', function() {
+            const customTimeSection = document.getElementById('custom-time-section');
+            if (this.value === 'custom') {
+                customTimeSection.classList.remove('hidden');
+            } else {
+                customTimeSection.classList.add('hidden');
+                document.getElementById('custom-time').value = '';
+            }
+            checkAvailability();
+        });
+
+        // Check availability
+        function checkAvailability() {
+            const day = document.getElementById('day').value;
+            const timeSlot = document.getElementById('time-slot').value;
+            const customTime = document.getElementById('custom-time').value;
+            const statusDiv = document.getElementById('availability-status');
+
+            if (day && timeSlot) {
+                let actualTimeSlot = timeSlot;
+                if (timeSlot === 'custom' && customTime) {
+                    actualTimeSlot = customTime;
+                }
+                
+                const existingBooking = bookings.find(b => b.day === day && b.timeSlot === actualTimeSlot);
+                if (existingBooking) {
+                    statusDiv.innerHTML = `<span class="text-red-600 font-medium">❌ Telah ditempah oleh ${existingBooking.teacherName} (${existingBooking.className})</span>`;
+                } else {
+                    statusDiv.innerHTML = `<span class="text-green-600 font-medium">✅ Slot tersedia</span>`;
+                }
+            } else {
+                statusDiv.innerHTML = '';
+            }
+        }
+
+        // Handle form submission
+        document.getElementById('booking-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            let timeSlot = formData.get('timeSlot');
+            const customTime = formData.get('customTime');
+            
+            // Use custom time if selected
+            if (timeSlot === 'custom' && customTime) {
+                timeSlot = customTime;
+            } else if (timeSlot === 'custom' && !customTime) {
+                showErrorModal('Sila masukkan masa custom.');
+                return;
+            }
+            
+            const booking = {
+                id: nextId++,
+                teacherName: formData.get('teacherName'),
+                className: formData.get('className'),
+                purpose: formData.get('purpose'),
+                day: formData.get('day'),
+                timeSlot: timeSlot,
+                category: formData.get('category'),
+                email: formData.get('email') || '',
+                bookingDate: new Date().toLocaleDateString('ms-MY'),
+                timestamp: new Date().toISOString()
+            };
+
+            // Check if slot is already booked
+            const existingBooking = bookings.find(b => 
+                b.day === booking.day && b.timeSlot === booking.timeSlot
+            );
+
+            if (existingBooking) {
+                showErrorModal(`Masa ${booking.timeSlot} pada hari ${booking.day} telah ditempah oleh ${existingBooking.teacherName} (${existingBooking.className}).`);
+                return;
+            }
+
+            // Save booking
+            bookings.push(booking);
+            localStorage.setItem('smanip_bookings', JSON.stringify(bookings));
+            localStorage.setItem('smanip_next_id', nextId.toString());
+
+            // Send email notification (simulated)
+            if (booking.email) {
+                simulateEmailNotification(booking);
+            }
+
+            // Show success message
+            showSuccessModal(`Tempahan berjaya! Tempahan anda berjaya disimpan untuk ${booking.day}, ${booking.timeSlot}. ${booking.email ? 'Email pengesahan telah dihantar.' : ''}`);
+            
+            // Reset form
+            e.target.reset();
+            document.getElementById('custom-time-section').classList.add('hidden');
+            updateTimeSlots();
+            document.getElementById('availability-status').innerHTML = '';
+        });
+
+        // Simulate email notification
+        function simulateEmailNotification(booking) {
+            console.log(`Email sent to ${booking.email}:`);
+            console.log(`Subject: Pengesahan Tempahan SMANIP`);
+            console.log(`Body: Tempahan anda untuk ${booking.day}, ${booking.timeSlot} telah berjaya disimpan.`);
+        }
+
+        // Render schedule table
+        function renderSchedule() {
+            const tableBody = document.getElementById('schedule-table');
+            tableBody.innerHTML = '';
+
+            // Update week dates
+            updateWeekDates();
+
+            // Check if there are any afternoon bookings (after 1:30 PM)
+            const afternoonBookings = bookings.filter(b => {
+                return !standardTimeSlots.includes(b.timeSlot) && 
+                       (b.timeSlot.includes('2:') || b.timeSlot.includes('3:') || 
+                        b.timeSlot.includes('4:') || b.timeSlot.includes('5:') || 
+                        b.timeSlot.includes('6:') || b.timeSlot.includes('petang'));
+            });
+
+            // Show/hide custom time header based on afternoon bookings
+            const customHeader = document.getElementById('custom-time-header');
+            if (afternoonBookings.length > 0) {
+                customHeader.classList.remove('hidden');
+            } else {
+                customHeader.classList.add('hidden');
+            }
+
+            // Get days to show - include weekend only if there are bookings
+            const weekendBookings = bookings.filter(b => b.day === 'Sabtu' || b.day === 'Ahad');
+            const daysToShow = weekendBookings.length > 0 ? allDays : days;
+
+            // Create rows for each day
+            daysToShow.forEach(day => {
+                const row = document.createElement('tr');
+                row.className = 'hover:bg-gray-50';
+                
+                // Day column with date
+                const dayCell = document.createElement('td');
+                dayCell.className = 'border border-gray-300 px-4 py-3 font-medium bg-gray-50';
+                const dayDate = getDayDate(day);
+                dayCell.innerHTML = `<div class="font-semibold">${day}</div><div class="text-xs text-gray-500">${dayDate}</div>`;
+                row.appendChild(dayCell);
+
+                // Time slot columns
+                standardTimeSlots.forEach(timeSlot => {
+                    const timeCell = document.createElement('td');
+                    timeCell.className = 'border border-gray-300 px-2 py-3 text-center slot-hover cursor-pointer';
+                    
+                    const booking = bookings.find(b => b.day === day && b.timeSlot === timeSlot);
+                    
+                    if (booking) {
+                        timeCell.className += ' slot-booked';
+                        timeCell.innerHTML = `
+                            <div class="text-xs font-semibold">${booking.teacherName}</div>
+                            <div class="text-xs">${booking.className}</div>
+                        `;
+                        timeCell.onclick = () => showBookingDetails(booking);
+                    } else {
+                        timeCell.className += ' slot-available';
+                        timeCell.innerHTML = '<div class="text-xs font-semibold">KOSONG</div>';
+                        timeCell.title = 'Slot kosong - boleh ditempah';
+                    }
+                    
+                    row.appendChild(timeCell);
+                });
+
+                // Custom time column (only show if there are afternoon bookings)
+                if (afternoonBookings.length > 0) {
+                    const customCell = document.createElement('td');
+                    customCell.className = 'border border-gray-300 px-2 py-3 text-center';
+                    
+                    const dayAfternoonBookings = bookings.filter(b => {
+                        return b.day === day && !standardTimeSlots.includes(b.timeSlot) && 
+                               (b.timeSlot.includes('2:') || b.timeSlot.includes('3:') || 
+                                b.timeSlot.includes('4:') || b.timeSlot.includes('5:') || 
+                                b.timeSlot.includes('6:') || b.timeSlot.includes('petang'));
+                    });
+                    
+                    if (dayAfternoonBookings.length > 0) {
+                        customCell.innerHTML = dayAfternoonBookings.map(booking => `
+                            <div class="slot-booked slot-hover cursor-pointer mb-1 p-1 rounded text-xs" onclick="showBookingDetails(${JSON.stringify(booking).replace(/"/g, '&quot;')})">
+                                <div class="font-semibold">${booking.timeSlot}</div>
+                                <div>${booking.teacherName}</div>
+                                <div>${booking.className}</div>
+                            </div>
+                        `).join('');
+                    } else {
+                        customCell.innerHTML = '<div class="text-xs text-gray-400">Tiada</div>';
+                    }
+                    
+                    row.appendChild(customCell);
+                }
+                
+                tableBody.appendChild(row);
+            });
+
+            // Update day counts and show/hide weekend summary
+            const weekendSummary = document.getElementById('weekend-summary');
+            if (weekendBookings.length > 0) {
+                weekendSummary.classList.remove('hidden');
+                document.getElementById('saturday-count').textContent = bookings.filter(b => b.day === 'Sabtu').length;
+                document.getElementById('sunday-count').textContent = bookings.filter(b => b.day === 'Ahad').length;
+            } else {
+                weekendSummary.classList.add('hidden');
+            }
+
+            // Update weekday counts
+            days.forEach((day, index) => {
+                const dayCount = bookings.filter(b => b.day === day).length;
+                const countElements = ['monday-count', 'tuesday-count', 'wednesday-count', 'thursday-count', 'friday-count'];
+                document.getElementById(countElements[index]).textContent = dayCount;
+            });
+        }
+
+        // Get current week dates
+        function updateWeekDates() {
+            const today = new Date();
+            const monday = new Date(today);
+            monday.setDate(today.getDate() - today.getDay() + 1);
+            
+            const sunday = new Date(monday);
+            sunday.setDate(monday.getDate() + 6);
+            
+            const weekDatesElement = document.getElementById('week-dates');
+            weekDatesElement.textContent = `Minggu: ${monday.toLocaleDateString('ms-MY')} - ${sunday.toLocaleDateString('ms-MY')}`;
+        }
+
+        // Get date for specific day of current week
+        function getDayDate(dayName) {
+            const today = new Date();
+            const monday = new Date(today);
+            monday.setDate(today.getDate() - today.getDay() + 1);
+            
+            const dayIndex = days.indexOf(dayName);
+            const dayDate = new Date(monday);
+            dayDate.setDate(monday.getDate() + dayIndex);
+            
+            return dayDate.toLocaleDateString('ms-MY');
+        }
+
+        // Show booking details
+        function showBookingDetails(booking) {
+            const detailsDiv = document.getElementById('booking-details');
+            detailsDiv.innerHTML = `
+                <div><strong>ID:</strong> ${booking.id}</div>
+                <div><strong>Guru:</strong> ${booking.teacherName}</div>
+                <div><strong>Kelas:</strong> ${booking.className}</div>
+                <div><strong>Hari:</strong> ${booking.day}</div>
+                <div><strong>Masa:</strong> ${booking.timeSlot}</div>
+                <div><strong>Tujuan:</strong> ${booking.purpose}</div>
+                <div><strong>Email:</strong> ${booking.email || 'Tiada'}</div>
+                <div><strong>Tarikh Tempah:</strong> ${booking.bookingDate}</div>
+            `;
+            document.getElementById('booking-modal').classList.remove('hidden');
+            document.getElementById('booking-modal').classList.add('flex');
+        }
+
+        function closeBookingModal() {
+            document.getElementById('booking-modal').classList.add('hidden');
+            document.getElementById('booking-modal').classList.remove('flex');
+        }
+
+        // Admin login
+        document.getElementById('login-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const username = document.getElementById('admin-username').value;
+            const password = document.getElementById('admin-password').value;
+
+            if (username === 'admin' && password === 'admin123') {
+                isAdminLoggedIn = true;
+                document.getElementById('admin-login').classList.add('hidden');
+                document.getElementById('admin-panel').classList.remove('hidden');
+                // Show admin controls
+                document.getElementById('bg-customizer').classList.remove('hidden');
+                document.getElementById('admin-edit-home').classList.remove('hidden');
+                renderAdminTable();
+            } else {
+                showErrorModal('Nama pengguna atau kata laluan salah!');
+            }
+        });
+
+        function logoutAdmin() {
+            isAdminLoggedIn = false;
+            document.getElementById('admin-login').classList.remove('hidden');
+            document.getElementById('admin-panel').classList.add('hidden');
+            document.getElementById('admin-username').value = '';
+            document.getElementById('admin-password').value = '';
+            // Hide background customizer and homepage editor when admin logs out
+            document.getElementById('bg-customizer').classList.add('hidden');
+            document.getElementById('admin-edit-home').classList.add('hidden');
+        }
+
+        // Render admin table
+        function renderAdminTable() {
+            const tableBody = document.getElementById('admin-table');
+            tableBody.innerHTML = '';
+
+            if (bookings.length === 0) {
+                const row = document.createElement('tr');
+                row.innerHTML = '<td colspan="9" class="border border-gray-300 px-4 py-8 text-center text-gray-500">Tiada tempahan dijumpai</td>';
+                tableBody.appendChild(row);
+                return;
+            }
+
+            bookings.forEach(booking => {
+                const row = document.createElement('tr');
+                row.className = 'hover:bg-gray-50';
+                row.innerHTML = `
+                    <td class="border border-gray-300 px-4 py-3">${booking.id}</td>
+                    <td class="border border-gray-300 px-4 py-3">${booking.teacherName}</td>
+                    <td class="border border-gray-300 px-4 py-3">${booking.className}</td>
+                    <td class="border border-gray-300 px-4 py-3">${booking.day}</td>
+                    <td class="border border-gray-300 px-4 py-3">${booking.timeSlot}</td>
+                    <td class="border border-gray-300 px-4 py-3 max-w-xs truncate" title="${booking.purpose}">${booking.purpose}</td>
+                    <td class="border border-gray-300 px-4 py-3">${booking.email || '-'}</td>
+                    <td class="border border-gray-300 px-4 py-3">${booking.bookingDate}</td>
+                    <td class="border border-gray-300 px-4 py-3 text-center">
+                        <button onclick="deleteBooking(${booking.id})" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm transition-colors">
+                            Padam
+                        </button>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        // Delete booking
+        function deleteBooking(id) {
+            const booking = bookings.find(b => b.id === id);
+            if (booking && confirm(`Adakah anda pasti ingin memadam tempahan ${booking.teacherName} (${booking.className}) pada ${booking.day}, ${booking.timeSlot}?`)) {
+                bookings = bookings.filter(b => b.id !== id);
+                localStorage.setItem('smanip_bookings', JSON.stringify(bookings));
+                renderAdminTable();
+                showSuccessModal('Tempahan berjaya dipadam.');
+            }
+        }
+
+        // Clear all bookings
+        function clearAllBookings() {
+            if (bookings.length === 0) {
+                showErrorModal('Tiada tempahan untuk dipadam.');
+                return;
+            }
+            
+            if (confirm('Adakah anda pasti ingin memadam SEMUA tempahan? Tindakan ini tidak boleh dibatalkan.')) {
+                bookings = [];
+                nextId = 1;
+                localStorage.setItem('smanip_bookings', JSON.stringify(bookings));
+                localStorage.setItem('smanip_next_id', '1');
+                renderAdminTable();
+                showSuccessModal('Semua tempahan berjaya dipadam.');
+            }
+        }
+
+        // Export data as CSV
+        function exportData() {
+            if (bookings.length === 0) {
+                showErrorModal('Tiada data untuk dieksport.');
+                return;
+            }
+
+            const csvContent = "data:text/csv;charset=utf-8," 
+                + "ID,Nama Guru,Kelas,Hari,Masa,Tujuan,Email,Tarikh Tempah\n"
+                + bookings.map(b => `${b.id},"${b.teacherName}","${b.className}","${b.day}","${b.timeSlot}","${b.purpose}","${b.email || ''}","${b.bookingDate}"`).join("\n");
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `tempahan_smanip_${new Date().toISOString().split('T')[0]}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            showSuccessModal('Data berjaya dieksport sebagai fail CSV.');
+        }
+
+        // Export as PDF
+        function exportPDF() {
+            if (typeof jsPDF === 'undefined') {
+                showErrorModal('PDF library tidak tersedia.');
+                return;
+            }
+
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            doc.text('Laporan Tempahan SMANIP', 20, 20);
+            doc.text(`Tarikh: ${new Date().toLocaleDateString('ms-MY')}`, 20, 30);
+            doc.text(`Jumlah Tempahan: ${bookings.length}`, 20, 40);
+            
+            let yPos = 60;
+            bookings.forEach((booking, index) => {
+                if (yPos > 250) {
+                    doc.addPage();
+                    yPos = 20;
+                }
+                doc.text(`${index + 1}. ${booking.teacherName} - ${booking.className}`, 20, yPos);
+                doc.text(`   ${booking.day}, ${booking.timeSlot}`, 20, yPos + 10);
+                yPos += 25;
+            });
+
+            doc.save(`tempahan_smanip_${new Date().toISOString().split('T')[0]}.pdf`);
+            showSuccessModal('Laporan PDF berjaya dijana.');
+        }
+
+        // Save schedule as PDF
+        function saveSchedulePDF() {
+            if (typeof jsPDF === 'undefined') {
+                showErrorModal('PDF library tidak tersedia.');
+                return;
+            }
+
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF('landscape');
+            
+            // Header
+            doc.setFontSize(18);
+            doc.text('JADUAL TEMPAHAN SMANIP', 20, 20);
+            doc.setFontSize(12);
+            doc.text(`Tarikh Cetak: ${new Date().toLocaleDateString('ms-MY')}`, 20, 30);
+            
+            // Get week dates
+            const today = new Date();
+            const monday = new Date(today);
+            monday.setDate(today.getDate() - today.getDay() + 1);
+            const sunday = new Date(monday);
+            sunday.setDate(monday.getDate() + 6);
+            doc.text(`Minggu: ${monday.toLocaleDateString('ms-MY')} - ${sunday.toLocaleDateString('ms-MY')}`, 20, 40);
+            doc.text(`Jumlah Tempahan: ${bookings.length}`, 20, 50);
+            
+            // Table headers
+            const headers = ['Hari', '7:00-8:00', '8:00-9:00', '9:00-10:00', '10:30-11:30', '11:30-12:30', '12:30-1:30', 'Masa Lain'];
+            const colWidth = 35;
+            const startX = 10;
+            let yPos = 70;
+            
+            // Draw header row
+            doc.setFillColor(240, 240, 240);
+            doc.rect(startX, yPos - 8, colWidth * 8, 12, 'F');
+            doc.setFontSize(8);
+            headers.forEach((header, index) => {
+                doc.text(header, startX + (index * colWidth) + 2, yPos);
+            });
+            
+            yPos += 15;
+            
+            // Draw table rows for each day
+            days.forEach(day => {
+                // Day column
+                doc.text(`${day} (${getDayDate(day)})`, startX + 2, yPos);
+                
+                // Standard time slots
+                standardTimeSlots.forEach((timeSlot, timeIndex) => {
+                    const booking = bookings.find(b => b.day === day && b.timeSlot === timeSlot);
+                    const cellX = startX + ((timeIndex + 1) * colWidth);
+                    
+                    if (booking) {
+                        doc.setFillColor(139, 92, 246); // Purple
+                        doc.rect(cellX, yPos - 8, colWidth, 12, 'F');
+                        doc.setTextColor(255, 255, 255);
+                        doc.setFontSize(6);
+                        doc.text(booking.teacherName, cellX + 2, yPos - 2);
+                        doc.text(booking.className, cellX + 2, yPos + 4);
+                        doc.setTextColor(0, 0, 0);
+                        doc.setFontSize(8);
+                    } else {
+                        doc.setFillColor(16, 185, 129); // Green
+                        doc.rect(cellX, yPos - 8, colWidth, 12, 'F');
+                        doc.setTextColor(255, 255, 255);
+                        doc.text('KOSONG', cellX + 2, yPos);
+                        doc.setTextColor(0, 0, 0);
+                    }
+                });
+                
+                // Custom time column
+                const customBookings = bookings.filter(b => b.day === day && !standardTimeSlots.includes(b.timeSlot));
+                const customCellX = startX + (7 * colWidth);
+                
+                if (customBookings.length > 0) {
+                    doc.setFillColor(139, 92, 246);
+                    doc.rect(customCellX, yPos - 8, colWidth, 12, 'F');
+                    doc.setTextColor(255, 255, 255);
+                    doc.setFontSize(6);
+                    customBookings.forEach((booking, index) => {
+                        doc.text(`${booking.timeSlot}`, customCellX + 2, yPos - 4 + (index * 3));
+                        doc.text(`${booking.teacherName}`, customCellX + 2, yPos - 1 + (index * 3));
+                    });
+                    doc.setTextColor(0, 0, 0);
+                    doc.setFontSize(8);
+                } else {
+                    doc.setFillColor(220, 220, 220);
+                    doc.rect(customCellX, yPos - 8, colWidth, 12, 'F');
+                    doc.text('Tiada', customCellX + 2, yPos);
+                }
+                
+                yPos += 15;
+                
+                if (yPos > 180) {
+                    doc.addPage('landscape');
+                    yPos = 20;
+                }
+            });
+            
+            // Add legend
+            yPos += 10;
+            doc.setFillColor(139, 92, 246);
+            doc.rect(startX, yPos, 10, 8, 'F');
+            doc.text('Ditempah', startX + 15, yPos + 5);
+            
+            doc.setFillColor(16, 185, 129);
+            doc.rect(startX + 80, yPos, 10, 8, 'F');
+            doc.text('Kosong', startX + 95, yPos + 5);
+
+            doc.save(`jadual_tempahan_${new Date().toISOString().split('T')[0]}.pdf`);
+            showSuccessModal('Berjaya dimuat turun!');
+        }
+
+        // Refresh schedule
+        function refreshSchedule() {
+            renderSchedule();
+            showSuccessModal('Jadual berjaya dikemaskini!');
+        }
+
+        // Send email notifications (simulated)
+        function sendEmailNotifications() {
+            const emailBookings = bookings.filter(b => b.email);
+            if (emailBookings.length === 0) {
+                showErrorModal('Tiada tempahan dengan alamat email.');
+                return;
+            }
+
+            emailBookings.forEach(booking => {
+                simulateEmailNotification(booking);
+            });
+
+            showSuccessModal(`${emailBookings.length} email pengesahan telah dihantar.`);
+        }
+
+        // Show success modal
+        function showSuccessModal(message) {
+            document.getElementById('success-message').textContent = message;
+            document.getElementById('success-modal').classList.remove('hidden');
+            document.getElementById('success-modal').classList.add('flex');
+        }
+
+        // Show error modal
+        function showErrorModal(message) {
+            document.getElementById('error-message').textContent = message;
+            document.getElementById('error-modal').classList.remove('hidden');
+            document.getElementById('error-modal').classList.add('flex');
+        }
+
+        // Close modal
+        function closeModal() {
+            document.getElementById('success-modal').classList.add('hidden');
+            document.getElementById('success-modal').classList.remove('flex');
+            document.getElementById('error-modal').classList.add('hidden');
+            document.getElementById('error-modal').classList.remove('flex');
+        }
+
+        // Show usage details
+        function showUsageDetails() {
+            const totalSlots = days.length * 6; // 5 days × 6 time slots
+            const usedSlots = bookings.length;
+            const availableSlots = totalSlots - usedSlots;
+            const usageRate = totalSlots > 0 ? Math.round((usedSlots / totalSlots) * 100) : 0;
+            
+            const message = `📊 STATISTIK PENGGUNAAN\n\n` +
+                          `• Jumlah Slot: ${totalSlots}\n` +
+                          `• Slot Ditempah: ${usedSlots}\n` +
+                          `• Slot Tersedia: ${availableSlots}\n` +
+                          `• Kadar Penggunaan: ${usageRate}%\n\n` +
+                          `Klik "Lihat Jadual" untuk maklumat lanjut.`;
+            
+            showSuccessModal(message);
+        }
+
+        // Homepage editor functions
+        function toggleHomeEditor() {
+            const modal = document.getElementById('home-editor-modal');
+            const title = document.getElementById('homepage-title').textContent;
+            const description = document.getElementById('homepage-description').textContent;
+            
+            document.getElementById('edit-title').value = title;
+            document.getElementById('edit-description').value = description;
+            
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeHomeEditor() {
+            document.getElementById('home-editor-modal').classList.add('hidden');
+            document.getElementById('home-editor-modal').classList.remove('flex');
+        }
+
+        function setHomeBg(gradient) {
+            document.documentElement.style.setProperty('--custom-bg', gradient);
+            localStorage.setItem('smanip_bg', gradient);
+        }
+
+        function removeLogo() {
+            const logo = document.getElementById('school-logo');
+            const defaultIcon = document.getElementById('default-icon');
+            
+            logo.classList.add('hidden');
+            logo.src = '';
+            defaultIcon.classList.remove('hidden');
+            
+            localStorage.removeItem('smanip_logo');
+            showSuccessModal('Logo berjaya dibuang.');
+        }
+
+        function removeCustomBg() {
+            // Reset to default background
+            document.documentElement.style.setProperty('--custom-bg', 'linear-gradient(135deg, #f0fdf4, #dcfce7)');
+            document.body.style.background = '';
+            
+            // Clear localStorage
+            localStorage.removeItem('smanip_bg');
+            localStorage.removeItem('smanip_pattern_type');
+            
+            showSuccessModal('Latar belakang berjaya dikembalikan ke asal.');
+        }
+
+        // Handle homepage editor form
+        document.getElementById('home-editor-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const title = document.getElementById('edit-title').value;
+            const description = document.getElementById('edit-description').value;
+            const logoFile = document.getElementById('logo-upload').files[0];
+            
+            // Update title and description
+            document.getElementById('homepage-title').textContent = title;
+            document.getElementById('homepage-description').textContent = description;
+            
+            // Save to localStorage
+            localStorage.setItem('smanip_title', title);
+            localStorage.setItem('smanip_description', description);
+            
+            // Handle logo upload
+            if (logoFile) {
+                if (logoFile.size > 2 * 1024 * 1024) { // 2MB limit
+                    showErrorModal('Saiz fail logo terlalu besar. Maksimum 2MB.');
+                    return;
+                }
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const logo = document.getElementById('school-logo');
+                    const defaultIcon = document.getElementById('default-icon');
+                    
+                    logo.src = e.target.result;
+                    logo.alt = 'Logo Sekolah';
+                    logo.classList.remove('hidden');
+                    defaultIcon.classList.add('hidden');
+                    
+                    // Save to localStorage
+                    localStorage.setItem('smanip_logo', e.target.result);
+                };
+                reader.readAsDataURL(logoFile);
+            }
+            
+            // Handle background image upload
+            const bgFile = document.getElementById('bg-upload').files[0];
+            if (bgFile) {
+                if (bgFile.size > 5 * 1024 * 1024) { // 5MB limit
+                    showErrorModal('Saiz fail gambar latar belakang terlalu besar. Maksimum 5MB.');
+                    return;
+                }
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const bgUrl = `url(${e.target.result})`;
+                    document.documentElement.style.setProperty('--custom-bg', bgUrl);
+                    localStorage.setItem('smanip_bg', bgUrl);
+                };
+                reader.readAsDataURL(bgFile);
+            }
+            
+            closeHomeEditor();
+            showSuccessModal('Homepage berjaya dikemaskini!');
+        });
+
+        // Load homepage content
+        function loadHomepageContent() {
+            const savedTitle = localStorage.getItem('smanip_title');
+            const savedDescription = localStorage.getItem('smanip_description');
+            const savedLogo = localStorage.getItem('smanip_logo');
+            
+            if (savedTitle) {
+                document.getElementById('homepage-title').textContent = savedTitle;
+            }
+            
+            if (savedDescription) {
+                document.getElementById('homepage-description').textContent = savedDescription;
+            }
+            
+            if (savedLogo) {
+                const logo = document.getElementById('school-logo');
+                const defaultIcon = document.getElementById('default-icon');
+                
+                logo.src = savedLogo;
+                logo.alt = 'Logo Sekolah';
+                logo.classList.remove('hidden');
+                defaultIcon.classList.add('hidden');
+            }
+        }
+
+        // Islamic pattern functions
+        function setIslamicPattern(patternType) {
+            let patternCSS = '';
+            
+            switch(patternType) {
+                case 'geometric':
+                    patternCSS = `
+                        background: linear-gradient(135deg, #f0fdf4, #dcfce7),
+                        repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(34, 197, 94, 0.1) 10px, rgba(34, 197, 94, 0.1) 20px),
+                        repeating-linear-gradient(-45deg, transparent, transparent 10px, rgba(34, 197, 94, 0.05) 10px, rgba(34, 197, 94, 0.05) 20px);
+                    `;
+                    break;
+                case 'arabesque':
+                    patternCSS = `
+                        background: linear-gradient(135deg, #f0f9ff, #e0f2fe),
+                        radial-gradient(circle at 25% 25%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+                        radial-gradient(circle at 75% 75%, rgba(59, 130, 246, 0.1) 0%, transparent 50%);
+                        background-size: 100% 100%, 40px 40px, 40px 40px;
+                    `;
+                    break;
+                case 'calligraphy':
+                    patternCSS = `
+                        background: linear-gradient(135deg, #fffbeb, #fef3c7),
+                        repeating-linear-gradient(0deg, transparent, transparent 15px, rgba(245, 158, 11, 0.1) 15px, rgba(245, 158, 11, 0.1) 30px),
+                        repeating-linear-gradient(90deg, transparent, transparent 25px, rgba(245, 158, 11, 0.05) 25px, rgba(245, 158, 11, 0.05) 50px);
+                    `;
+                    break;
+                case 'mosque':
+                    patternCSS = `
+                        background: linear-gradient(135deg, #f3e8ff, #e9d5ff),
+                        repeating-conic-gradient(from 0deg at 50% 50%, transparent 0deg, rgba(139, 92, 246, 0.1) 45deg, transparent 90deg);
+                        background-size: 100% 100%, 60px 60px;
+                    `;
+                    break;
+            }
+            
+            // Apply the pattern
+            document.body.style.background = patternCSS;
+            
+            // Save to localStorage
+            localStorage.setItem('smanip_bg', patternCSS);
+            localStorage.setItem('smanip_pattern_type', patternType);
+            
+            showSuccessModal(`Corak Islamik "${getPatternName(patternType)}" berjaya digunakan!`);
+        }
+        
+        function getPatternName(patternType) {
+            const names = {
+                'geometric': 'Corak Geometri',
+                'arabesque': 'Corak Arabesque', 
+                'calligraphy': 'Kaligrafi',
+                'mosque': 'Siluet Masjid'
+            };
+            return names[patternType] || patternType;
+        }
+
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load saved background
+            const savedBg = localStorage.getItem('smanip_bg');
+            const savedPatternType = localStorage.getItem('smanip_pattern_type');
+            
+            if (savedBg) {
+                if (savedPatternType) {
+                    // Apply Islamic pattern
+                    document.body.style.background = savedBg;
+                } else {
+                    // Apply regular gradient
+                    document.documentElement.style.setProperty('--custom-bg', savedBg);
+                }
+            }
+
+            // Load homepage content
+            loadHomepageContent();
+
+            showPage('home');
+            
+            // Close background customizer when clicking outside
+            document.addEventListener('click', function(e) {
+                const customizer = document.getElementById('bg-customizer');
+                const options = document.getElementById('bg-options');
+                if (!customizer.contains(e.target)) {
+                    options.classList.add('hidden');
+                }
+            });
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'992603ba903b1be4',t:'MTc2MTEwNDg1OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
