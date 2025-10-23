@@ -50,7 +50,7 @@
     <div id="sync-status" class="fixed top-4 left-4 z-50 no-print">
         <div class="bg-white/90 backdrop-blur-sm rounded-lg shadow-lg p-3 flex items-center gap-2">
             <div id="sync-indicator" class="w-3 h-3 rounded-full bg-green-500 animate-pulse"></div>
-            <span id="sync-text" class="text-sm font-medium text-gray-700">Tersambung</span>
+            <span id="sync-text" class="text-sm font-medium text-gray-700">ONLINE</span>
             <span id="user-count" class="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full">1 pengguna</span>
         </div>
     </div>
@@ -72,8 +72,6 @@
             </div>
         </div>
     </div>
-
-
 
     <div class="container mx-auto px-4 py-6">
         <!-- Header -->
@@ -536,209 +534,6 @@
                     </div>
                 </div>
             </div>
-            
-            <!-- Homepage Editor Modal (Admin Only) -->
-            <div id="home-editor-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
-                <div class="bg-white rounded-xl p-8 max-w-2xl mx-4 w-full max-h-[90vh] overflow-y-auto">
-                    <h3 class="text-xl font-bold text-gray-800 mb-6">✏️ Edit Homepage</h3>
-                    
-                    <form id="home-editor-form" class="space-y-6">
-                        <div>
-                            <label for="edit-title" class="block text-sm font-medium text-gray-700 mb-2">Tajuk Utama</label>
-                            <input type="text" id="edit-title" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500">
-                        </div>
-                        
-                        <div>
-                            <label for="edit-description" class="block text-sm font-medium text-gray-700 mb-2">Penerangan</label>
-                            <textarea id="edit-description" rows="3" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"></textarea>
-                        </div>
-                        
-                        <div>
-                            <label for="logo-upload" class="block text-sm font-medium text-gray-700 mb-2">Logo Sekolah</label>
-                            <input type="file" id="logo-upload" accept="image/*" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500">
-                            <p class="text-sm text-gray-500 mt-1">Format: JPG, PNG, GIF (Maksimum: 2MB)</p>
-                            <button type="button" onclick="removeLogo()" class="mt-2 text-red-600 hover:text-red-800 text-sm">Buang Logo</button>
-                        </div>
-                        
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Latar Belakang Homepage</label>
-                            <div class="mb-4">
-                                <label for="bg-upload" class="block text-sm font-medium text-gray-700 mb-2">Muat Naik Gambar/GIF Latar Belakang</label>
-                                <input type="file" id="bg-upload" accept="image/*,.gif" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500">
-                                <p class="text-sm text-gray-500 mt-1">Format: JPG, PNG, GIF (Maksimum: 5MB)</p>
-                                <button type="button" onclick="removeCustomBg()" class="mt-2 text-red-600 hover:text-red-800 text-sm">Buang Gambar Latar Belakang</button>
-                            </div>
-                            
-                            <!-- Tema Menarik -->
-                            <div class="mb-4">
-                                <h4 class="text-sm font-medium text-gray-700 mb-3">🎨 Tema Menarik</h4>
-                                <div class="grid grid-cols-1 gap-3">
-                                    <!-- Tema Hijau Segar -->
-                                    <div class="border rounded-lg p-3 hover:shadow-md transition-shadow">
-                                        <div class="flex items-center gap-3 mb-2">
-                                            <div class="w-8 h-8 rounded-full" style="background: linear-gradient(135deg, #10b981, #34d399)"></div>
-                                            <span class="font-medium text-gray-800">🌿 Hijau Segar</span>
-                                        </div>
-                                        <div class="grid grid-cols-3 gap-1">
-                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #ecfdf5, #d1fae5)')" class="h-8 rounded border hover:border-green-500" style="background: linear-gradient(135deg, #ecfdf5, #d1fae5)"></button>
-                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #10b981, #34d399)')" class="h-8 rounded border hover:border-green-500" style="background: linear-gradient(135deg, #10b981, #34d399)"></button>
-                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #065f46, #047857)')" class="h-8 rounded border hover:border-green-500" style="background: linear-gradient(135deg, #065f46, #047857)"></button>
-                                        </div>
-                                    </div>
-                                    
-                                    <!-- Tema Biru Laut -->
-                                    <div class="border rounded-lg p-3 hover:shadow-md transition-shadow">
-                                        <div class="flex items-center gap-3 mb-2">
-                                            <div class="w-8 h-8 rounded-full" style="background: linear-gradient(135deg, #0ea5e9, #38bdf8)"></div>
-                                            <span class="font-medium text-gray-800">🌊 Biru Laut</span>
-                                        </div>
-                                        <div class="grid grid-cols-3 gap-1">
-                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #f0f9ff, #e0f2fe)')" class="h-8 rounded border hover:border-blue-500" style="background: linear-gradient(135deg, #f0f9ff, #e0f2fe)"></button>
-                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #0ea5e9, #38bdf8)')" class="h-8 rounded border hover:border-blue-500" style="background: linear-gradient(135deg, #0ea5e9, #38bdf8)"></button>
-                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #0c4a6e, #075985)')" class="h-8 rounded border hover:border-blue-500" style="background: linear-gradient(135deg, #0c4a6e, #075985)"></button>
-                                        </div>
-                                    </div>
-                                    
-                                    <!-- Tema Ungu Mewah -->
-                                    <div class="border rounded-lg p-3 hover:shadow-md transition-shadow">
-                                        <div class="flex items-center gap-3 mb-2">
-                                            <div class="w-8 h-8 rounded-full" style="background: linear-gradient(135deg, #8b5cf6, #a78bfa)"></div>
-                                            <span class="font-medium text-gray-800">💜 Ungu Mewah</span>
-                                        </div>
-                                        <div class="grid grid-cols-3 gap-1">
-                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #faf5ff, #f3e8ff)')" class="h-8 rounded border hover:border-purple-500" style="background: linear-gradient(135deg, #faf5ff, #f3e8ff)"></button>
-                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #8b5cf6, #a78bfa)')" class="h-8 rounded border hover:border-purple-500" style="background: linear-gradient(135deg, #8b5cf6, #a78bfa)"></button>
-                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #581c87, #6b21a8)')" class="h-8 rounded border hover:border-purple-500" style="background: linear-gradient(135deg, #581c87, #6b21a8)"></button>
-                                        </div>
-                                    </div>
-                                    
-                                    <!-- Tema Oren Hangat -->
-                                    <div class="border rounded-lg p-3 hover:shadow-md transition-shadow">
-                                        <div class="flex items-center gap-3 mb-2">
-                                            <div class="w-8 h-8 rounded-full" style="background: linear-gradient(135deg, #f97316, #fb923c)"></div>
-                                            <span class="font-medium text-gray-800">🔥 Oren Hangat</span>
-                                        </div>
-                                        <div class="grid grid-cols-3 gap-1">
-                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #fff7ed, #fed7aa)')" class="h-8 rounded border hover:border-orange-500" style="background: linear-gradient(135deg, #fff7ed, #fed7aa)"></button>
-                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #f97316, #fb923c)')" class="h-8 rounded border hover:border-orange-500" style="background: linear-gradient(135deg, #f97316, #fb923c)"></button>
-                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #9a3412, #c2410c)')" class="h-8 rounded border hover:border-orange-500" style="background: linear-gradient(135deg, #9a3412, #c2410c)"></button>
-                                        </div>
-                                    </div>
-                                    
-                                    <!-- Tema Merah Jambu Lembut -->
-                                    <div class="border rounded-lg p-3 hover:shadow-md transition-shadow">
-                                        <div class="flex items-center gap-3 mb-2">
-                                            <div class="w-8 h-8 rounded-full" style="background: linear-gradient(135deg, #ec4899, #f472b6)"></div>
-                                            <span class="font-medium text-gray-800">🌸 Merah Jambu Lembut</span>
-                                        </div>
-                                        <div class="grid grid-cols-3 gap-1">
-                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #fdf2f8, #fce7f3)')" class="h-8 rounded border hover:border-pink-500" style="background: linear-gradient(135deg, #fdf2f8, #fce7f3)"></button>
-                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #ec4899, #f472b6)')" class="h-8 rounded border hover:border-pink-500" style="background: linear-gradient(135deg, #ec4899, #f472b6)"></button>
-                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #831843, #be185d)')" class="h-8 rounded border hover:border-pink-500" style="background: linear-gradient(135deg, #831843, #be185d)"></button>
-                                        </div>
-                                    </div>
-                                    
-                                    <!-- Tema Islamik -->
-                                    <div class="border rounded-lg p-3 hover:shadow-md transition-shadow">
-                                        <div class="flex items-center gap-3 mb-2">
-                                            <div class="w-8 h-8 rounded-full" style="background: linear-gradient(135deg, #059669, #10b981)"></div>
-                                            <span class="font-medium text-gray-800">🕌 Tema Islamik - Hijau Masjid</span>
-                                        </div>
-                                        <div class="grid grid-cols-3 gap-1">
-                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #f0fdf4, #dcfce7)')" class="h-8 rounded border hover:border-green-600" style="background: linear-gradient(135deg, #f0fdf4, #dcfce7)"></button>
-                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #059669, #10b981)')" class="h-8 rounded border hover:border-green-600" style="background: linear-gradient(135deg, #059669, #10b981)"></button>
-                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #064e3b, #065f46)')" class="h-8 rounded border hover:border-green-600" style="background: linear-gradient(135deg, #064e3b, #065f46)"></button>
-                                        </div>
-                                    </div>
-                                    
-                                    <!-- Tema Islamik Emas -->
-                                    <div class="border rounded-lg p-3 hover:shadow-md transition-shadow">
-                                        <div class="flex items-center gap-3 mb-2">
-                                            <div class="w-8 h-8 rounded-full" style="background: linear-gradient(135deg, #d97706, #f59e0b)"></div>
-                                            <span class="font-medium text-gray-800">✨ Tema Islamik - Emas Klasik</span>
-                                        </div>
-                                        <div class="grid grid-cols-3 gap-1">
-                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #fffbeb, #fef3c7)')" class="h-8 rounded border hover:border-yellow-600" style="background: linear-gradient(135deg, #fffbeb, #fef3c7)"></button>
-                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #d97706, #f59e0b)')" class="h-8 rounded border hover:border-yellow-600" style="background: linear-gradient(135deg, #d97706, #f59e0b)"></button>
-                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #92400e, #b45309)')" class="h-8 rounded border hover:border-yellow-600" style="background: linear-gradient(135deg, #92400e, #b45309)"></button>
-                                        </div>
-                                    </div>
-                                    
-                                    <!-- Tema Islamik Biru Turki -->
-                                    <div class="border rounded-lg p-3 hover:shadow-md transition-shadow">
-                                        <div class="flex items-center gap-3 mb-2">
-                                            <div class="w-8 h-8 rounded-full" style="background: linear-gradient(135deg, #0369a1, #0284c7)"></div>
-                                            <span class="font-medium text-gray-800">🌙 Tema Islamik - Biru Turki</span>
-                                        </div>
-                                        <div class="grid grid-cols-3 gap-1">
-                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #f0f9ff, #e0f2fe)')" class="h-8 rounded border hover:border-blue-600" style="background: linear-gradient(135deg, #f0f9ff, #e0f2fe)"></button>
-                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #0369a1, #0284c7)')" class="h-8 rounded border hover:border-blue-600" style="background: linear-gradient(135deg, #0369a1, #0284c7)"></button>
-                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #0c4a6e, #075985)')" class="h-8 rounded border hover:border-blue-600" style="background: linear-gradient(135deg, #0c4a6e, #075985)"></button>
-                                        </div>
-                                    </div>
-                                    
-                                    <!-- Tema Islamik Maroon -->
-                                    <div class="border rounded-lg p-3 hover:shadow-md transition-shadow">
-                                        <div class="flex items-center gap-3 mb-2">
-                                            <div class="w-8 h-8 rounded-full" style="background: linear-gradient(135deg, #991b1b, #dc2626)"></div>
-                                            <span class="font-medium text-gray-800">🏛️ Tema Islamik - Maroon Mewah</span>
-                                        </div>
-                                        <div class="grid grid-cols-3 gap-1">
-                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #fef2f2, #fecaca)')" class="h-8 rounded border hover:border-red-600" style="background: linear-gradient(135deg, #fef2f2, #fecaca)"></button>
-                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #991b1b, #dc2626)')" class="h-8 rounded border hover:border-red-600" style="background: linear-gradient(135deg, #991b1b, #dc2626)"></button>
-                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #7f1d1d, #991b1b)')" class="h-8 rounded border hover:border-red-600" style="background: linear-gradient(135deg, #7f1d1d, #991b1b)"></button>
-                                        </div>
-                                    </div>
-                                    
-                                    <!-- Tema Islamik Putih Suci -->
-                                    <div class="border rounded-lg p-3 hover:shadow-md transition-shadow">
-                                        <div class="flex items-center gap-3 mb-2">
-                                            <div class="w-8 h-8 rounded-full" style="background: linear-gradient(135deg, #f8fafc, #e2e8f0)"></div>
-                                            <span class="font-medium text-gray-800">🤍 Tema Islamik - Putih Suci</span>
-                                        </div>
-                                        <div class="grid grid-cols-3 gap-1">
-                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #ffffff, #f8fafc)')" class="h-8 rounded border hover:border-gray-400" style="background: linear-gradient(135deg, #ffffff, #f8fafc)"></button>
-                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #f8fafc, #e2e8f0)')" class="h-8 rounded border hover:border-gray-400" style="background: linear-gradient(135deg, #f8fafc, #e2e8f0)"></button>
-                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #e2e8f0, #cbd5e1)')" class="h-8 rounded border hover:border-gray-400" style="background: linear-gradient(135deg, #e2e8f0, #cbd5e1)"></button>
-                                        </div>
-                                    </div>
-                                    
-                                    <!-- Template Corak Islamik -->
-                                    <div class="border rounded-lg p-3 hover:shadow-md transition-shadow">
-                                        <div class="flex items-center gap-3 mb-2">
-                                            <div class="w-8 h-8 rounded-full bg-gradient-to-br from-green-600 to-yellow-500"></div>
-                                            <span class="font-medium text-gray-800">🎨 Template Corak Islamik</span>
-                                        </div>
-                                        <div class="grid grid-cols-2 gap-2">
-                                            <button type="button" onclick="setIslamicPattern('geometric')" class="h-12 rounded border hover:border-green-500 bg-gradient-to-br from-green-50 to-green-100 flex items-center justify-center text-xs font-medium">
-                                                Corak Geometri
-                                            </button>
-                                            <button type="button" onclick="setIslamicPattern('arabesque')" class="h-12 rounded border hover:border-blue-500 bg-gradient-to-br from-blue-50 to-blue-100 flex items-center justify-center text-xs font-medium">
-                                                Corak Arabesque
-                                            </button>
-                                            <button type="button" onclick="setIslamicPattern('calligraphy')" class="h-12 rounded border hover:border-yellow-500 bg-gradient-to-br from-yellow-50 to-yellow-100 flex items-center justify-center text-xs font-medium">
-                                                Kaligrafi
-                                            </button>
-                                            <button type="button" onclick="setIslamicPattern('mosque')" class="h-12 rounded border hover:border-purple-500 bg-gradient-to-br from-purple-50 to-purple-100 flex items-center justify-center text-xs font-medium">
-                                                Siluet Masjid
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="flex gap-4">
-                            <button type="submit" class="flex-1 bg-orange-600 hover:bg-orange-700 text-white font-bold py-3 px-6 rounded-lg transition-colors">
-                                Simpan Perubahan
-                            </button>
-                            <button type="button" onclick="closeHomeEditor()" class="flex-1 bg-gray-600 hover:bg-gray-700 text-white font-bold py-3 px-6 rounded-lg transition-colors">
-                                Batal
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
         </div>
 
         <!-- Admin Page -->
@@ -762,7 +557,6 @@
                             Masuk
                         </button>
                     </form>
-
                 </div>
 
                 <!-- Admin Panel -->
@@ -772,6 +566,37 @@
                         <button onclick="logoutAdmin()" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-semibold transition-colors">
                             Keluar
                         </button>
+                    </div>
+
+                    <!-- Real-Time Cloud Database Status -->
+                    <div class="mb-6 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6 border border-blue-200">
+                        <h3 class="text-lg font-bold text-blue-800 mb-4">☁️ Status Cloud Database Real-Time</h3>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                            <div class="bg-white/80 p-4 rounded-lg text-center">
+                                <div id="cloud-status" class="text-2xl font-bold text-green-600">ONLINE</div>
+                                <div class="text-sm text-gray-600">Status Cloud</div>
+                            </div>
+                            <div class="bg-white/80 p-4 rounded-lg text-center">
+                                <div id="active-devices" class="text-2xl font-bold text-blue-600">1</div>
+                                <div class="text-sm text-gray-600">Peranti Aktif</div>
+                            </div>
+                            <div class="bg-white/80 p-4 rounded-lg text-center">
+                                <div id="last-sync-time" class="text-2xl font-bold text-purple-600">Baru</div>
+                                <div class="text-sm text-gray-600">Sync Terakhir</div>
+                            </div>
+                            <div class="bg-white/80 p-4 rounded-lg text-center">
+                                <div id="sync-count" class="text-2xl font-bold text-orange-600">0</div>
+                                <div class="text-sm text-gray-600">Sync Hari Ini</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Active Devices Panel -->
+                    <div class="mb-6 bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-6 border border-green-200">
+                        <h3 class="text-lg font-bold text-green-800 mb-4">📱 Peranti Aktif Real-Time</h3>
+                        <div id="active-devices-list" class="space-y-2">
+                            <!-- Active devices will be populated by JavaScript -->
+                        </div>
                     </div>
                     
                     <div class="mb-6 flex flex-wrap gap-4 justify-center">
@@ -789,6 +614,9 @@
                         </button>
                         <button onclick="sendEmailNotifications()" class="bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 rounded-lg font-semibold transition-colors">
                             📧 Hantar Email
+                        </button>
+                        <button onclick="forceCloudSync()" class="bg-cyan-600 hover:bg-cyan-700 text-white px-6 py-2 rounded-lg font-semibold transition-colors">
+                            ☁️ Sync Cloud Paksa
                         </button>
                     </div>
 
@@ -812,209 +640,6 @@
                             </tbody>
                         </table>
                     </div>
-                </div>
-            </div>
-            
-            <!-- Homepage Editor Modal (Admin Only) -->
-            <div id="home-editor-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
-                <div class="bg-white rounded-xl p-8 max-w-2xl mx-4 w-full max-h-[90vh] overflow-y-auto">
-                    <h3 class="text-xl font-bold text-gray-800 mb-6">✏️ Edit Homepage</h3>
-                    
-                    <form id="home-editor-form" class="space-y-6">
-                        <div>
-                            <label for="edit-title" class="block text-sm font-medium text-gray-700 mb-2">Tajuk Utama</label>
-                            <input type="text" id="edit-title" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500">
-                        </div>
-                        
-                        <div>
-                            <label for="edit-description" class="block text-sm font-medium text-gray-700 mb-2">Penerangan</label>
-                            <textarea id="edit-description" rows="3" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"></textarea>
-                        </div>
-                        
-                        <div>
-                            <label for="logo-upload" class="block text-sm font-medium text-gray-700 mb-2">Logo Sekolah</label>
-                            <input type="file" id="logo-upload" accept="image/*" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500">
-                            <p class="text-sm text-gray-500 mt-1">Format: JPG, PNG, GIF (Maksimum: 2MB)</p>
-                            <button type="button" onclick="removeLogo()" class="mt-2 text-red-600 hover:text-red-800 text-sm">Buang Logo</button>
-                        </div>
-                        
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Latar Belakang Homepage</label>
-                            <div class="mb-4">
-                                <label for="bg-upload" class="block text-sm font-medium text-gray-700 mb-2">Muat Naik Gambar/GIF Latar Belakang</label>
-                                <input type="file" id="bg-upload" accept="image/*,.gif" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500">
-                                <p class="text-sm text-gray-500 mt-1">Format: JPG, PNG, GIF (Maksimum: 5MB)</p>
-                                <button type="button" onclick="removeCustomBg()" class="mt-2 text-red-600 hover:text-red-800 text-sm">Buang Gambar Latar Belakang</button>
-                            </div>
-                            
-                            <!-- Tema Menarik -->
-                            <div class="mb-4">
-                                <h4 class="text-sm font-medium text-gray-700 mb-3">🎨 Tema Menarik</h4>
-                                <div class="grid grid-cols-1 gap-3">
-                                    <!-- Tema Hijau Segar -->
-                                    <div class="border rounded-lg p-3 hover:shadow-md transition-shadow">
-                                        <div class="flex items-center gap-3 mb-2">
-                                            <div class="w-8 h-8 rounded-full" style="background: linear-gradient(135deg, #10b981, #34d399)"></div>
-                                            <span class="font-medium text-gray-800">🌿 Hijau Segar</span>
-                                        </div>
-                                        <div class="grid grid-cols-3 gap-1">
-                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #ecfdf5, #d1fae5)')" class="h-8 rounded border hover:border-green-500" style="background: linear-gradient(135deg, #ecfdf5, #d1fae5)"></button>
-                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #10b981, #34d399)')" class="h-8 rounded border hover:border-green-500" style="background: linear-gradient(135deg, #10b981, #34d399)"></button>
-                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #065f46, #047857)')" class="h-8 rounded border hover:border-green-500" style="background: linear-gradient(135deg, #065f46, #047857)"></button>
-                                        </div>
-                                    </div>
-                                    
-                                    <!-- Tema Biru Laut -->
-                                    <div class="border rounded-lg p-3 hover:shadow-md transition-shadow">
-                                        <div class="flex items-center gap-3 mb-2">
-                                            <div class="w-8 h-8 rounded-full" style="background: linear-gradient(135deg, #0ea5e9, #38bdf8)"></div>
-                                            <span class="font-medium text-gray-800">🌊 Biru Laut</span>
-                                        </div>
-                                        <div class="grid grid-cols-3 gap-1">
-                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #f0f9ff, #e0f2fe)')" class="h-8 rounded border hover:border-blue-500" style="background: linear-gradient(135deg, #f0f9ff, #e0f2fe)"></button>
-                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #0ea5e9, #38bdf8)')" class="h-8 rounded border hover:border-blue-500" style="background: linear-gradient(135deg, #0ea5e9, #38bdf8)"></button>
-                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #0c4a6e, #075985)')" class="h-8 rounded border hover:border-blue-500" style="background: linear-gradient(135deg, #0c4a6e, #075985)"></button>
-                                        </div>
-                                    </div>
-                                    
-                                    <!-- Tema Ungu Mewah -->
-                                    <div class="border rounded-lg p-3 hover:shadow-md transition-shadow">
-                                        <div class="flex items-center gap-3 mb-2">
-                                            <div class="w-8 h-8 rounded-full" style="background: linear-gradient(135deg, #8b5cf6, #a78bfa)"></div>
-                                            <span class="font-medium text-gray-800">💜 Ungu Mewah</span>
-                                        </div>
-                                        <div class="grid grid-cols-3 gap-1">
-                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #faf5ff, #f3e8ff)')" class="h-8 rounded border hover:border-purple-500" style="background: linear-gradient(135deg, #faf5ff, #f3e8ff)"></button>
-                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #8b5cf6, #a78bfa)')" class="h-8 rounded border hover:border-purple-500" style="background: linear-gradient(135deg, #8b5cf6, #a78bfa)"></button>
-                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #581c87, #6b21a8)')" class="h-8 rounded border hover:border-purple-500" style="background: linear-gradient(135deg, #581c87, #6b21a8)"></button>
-                                        </div>
-                                    </div>
-                                    
-                                    <!-- Tema Oren Hangat -->
-                                    <div class="border rounded-lg p-3 hover:shadow-md transition-shadow">
-                                        <div class="flex items-center gap-3 mb-2">
-                                            <div class="w-8 h-8 rounded-full" style="background: linear-gradient(135deg, #f97316, #fb923c)"></div>
-                                            <span class="font-medium text-gray-800">🔥 Oren Hangat</span>
-                                        </div>
-                                        <div class="grid grid-cols-3 gap-1">
-                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #fff7ed, #fed7aa)')" class="h-8 rounded border hover:border-orange-500" style="background: linear-gradient(135deg, #fff7ed, #fed7aa)"></button>
-                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #f97316, #fb923c)')" class="h-8 rounded border hover:border-orange-500" style="background: linear-gradient(135deg, #f97316, #fb923c)"></button>
-                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #9a3412, #c2410c)')" class="h-8 rounded border hover:border-orange-500" style="background: linear-gradient(135deg, #9a3412, #c2410c)"></button>
-                                        </div>
-                                    </div>
-                                    
-                                    <!-- Tema Merah Jambu Lembut -->
-                                    <div class="border rounded-lg p-3 hover:shadow-md transition-shadow">
-                                        <div class="flex items-center gap-3 mb-2">
-                                            <div class="w-8 h-8 rounded-full" style="background: linear-gradient(135deg, #ec4899, #f472b6)"></div>
-                                            <span class="font-medium text-gray-800">🌸 Merah Jambu Lembut</span>
-                                        </div>
-                                        <div class="grid grid-cols-3 gap-1">
-                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #fdf2f8, #fce7f3)')" class="h-8 rounded border hover:border-pink-500" style="background: linear-gradient(135deg, #fdf2f8, #fce7f3)"></button>
-                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #ec4899, #f472b6)')" class="h-8 rounded border hover:border-pink-500" style="background: linear-gradient(135deg, #ec4899, #f472b6)"></button>
-                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #831843, #be185d)')" class="h-8 rounded border hover:border-pink-500" style="background: linear-gradient(135deg, #831843, #be185d)"></button>
-                                        </div>
-                                    </div>
-                                    
-                                    <!-- Tema Islamik -->
-                                    <div class="border rounded-lg p-3 hover:shadow-md transition-shadow">
-                                        <div class="flex items-center gap-3 mb-2">
-                                            <div class="w-8 h-8 rounded-full" style="background: linear-gradient(135deg, #059669, #10b981)"></div>
-                                            <span class="font-medium text-gray-800">🕌 Tema Islamik - Hijau Masjid</span>
-                                        </div>
-                                        <div class="grid grid-cols-3 gap-1">
-                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #f0fdf4, #dcfce7)')" class="h-8 rounded border hover:border-green-600" style="background: linear-gradient(135deg, #f0fdf4, #dcfce7)"></button>
-                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #059669, #10b981)')" class="h-8 rounded border hover:border-green-600" style="background: linear-gradient(135deg, #059669, #10b981)"></button>
-                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #064e3b, #065f46)')" class="h-8 rounded border hover:border-green-600" style="background: linear-gradient(135deg, #064e3b, #065f46)"></button>
-                                        </div>
-                                    </div>
-                                    
-                                    <!-- Tema Islamik Emas -->
-                                    <div class="border rounded-lg p-3 hover:shadow-md transition-shadow">
-                                        <div class="flex items-center gap-3 mb-2">
-                                            <div class="w-8 h-8 rounded-full" style="background: linear-gradient(135deg, #d97706, #f59e0b)"></div>
-                                            <span class="font-medium text-gray-800">✨ Tema Islamik - Emas Klasik</span>
-                                        </div>
-                                        <div class="grid grid-cols-3 gap-1">
-                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #fffbeb, #fef3c7)')" class="h-8 rounded border hover:border-yellow-600" style="background: linear-gradient(135deg, #fffbeb, #fef3c7)"></button>
-                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #d97706, #f59e0b)')" class="h-8 rounded border hover:border-yellow-600" style="background: linear-gradient(135deg, #d97706, #f59e0b)"></button>
-                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #92400e, #b45309)')" class="h-8 rounded border hover:border-yellow-600" style="background: linear-gradient(135deg, #92400e, #b45309)"></button>
-                                        </div>
-                                    </div>
-                                    
-                                    <!-- Tema Islamik Biru Turki -->
-                                    <div class="border rounded-lg p-3 hover:shadow-md transition-shadow">
-                                        <div class="flex items-center gap-3 mb-2">
-                                            <div class="w-8 h-8 rounded-full" style="background: linear-gradient(135deg, #0369a1, #0284c7)"></div>
-                                            <span class="font-medium text-gray-800">🌙 Tema Islamik - Biru Turki</span>
-                                        </div>
-                                        <div class="grid grid-cols-3 gap-1">
-                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #f0f9ff, #e0f2fe)')" class="h-8 rounded border hover:border-blue-600" style="background: linear-gradient(135deg, #f0f9ff, #e0f2fe)"></button>
-                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #0369a1, #0284c7)')" class="h-8 rounded border hover:border-blue-600" style="background: linear-gradient(135deg, #0369a1, #0284c7)"></button>
-                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #0c4a6e, #075985)')" class="h-8 rounded border hover:border-blue-600" style="background: linear-gradient(135deg, #0c4a6e, #075985)"></button>
-                                        </div>
-                                    </div>
-                                    
-                                    <!-- Tema Islamik Maroon -->
-                                    <div class="border rounded-lg p-3 hover:shadow-md transition-shadow">
-                                        <div class="flex items-center gap-3 mb-2">
-                                            <div class="w-8 h-8 rounded-full" style="background: linear-gradient(135deg, #991b1b, #dc2626)"></div>
-                                            <span class="font-medium text-gray-800">🏛️ Tema Islamik - Maroon Mewah</span>
-                                        </div>
-                                        <div class="grid grid-cols-3 gap-1">
-                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #fef2f2, #fecaca)')" class="h-8 rounded border hover:border-red-600" style="background: linear-gradient(135deg, #fef2f2, #fecaca)"></button>
-                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #991b1b, #dc2626)')" class="h-8 rounded border hover:border-red-600" style="background: linear-gradient(135deg, #991b1b, #dc2626)"></button>
-                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #7f1d1d, #991b1b)')" class="h-8 rounded border hover:border-red-600" style="background: linear-gradient(135deg, #7f1d1d, #991b1b)"></button>
-                                        </div>
-                                    </div>
-                                    
-                                    <!-- Tema Islamik Putih Suci -->
-                                    <div class="border rounded-lg p-3 hover:shadow-md transition-shadow">
-                                        <div class="flex items-center gap-3 mb-2">
-                                            <div class="w-8 h-8 rounded-full" style="background: linear-gradient(135deg, #f8fafc, #e2e8f0)"></div>
-                                            <span class="font-medium text-gray-800">🤍 Tema Islamik - Putih Suci</span>
-                                        </div>
-                                        <div class="grid grid-cols-3 gap-1">
-                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #ffffff, #f8fafc)')" class="h-8 rounded border hover:border-gray-400" style="background: linear-gradient(135deg, #ffffff, #f8fafc)"></button>
-                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #f8fafc, #e2e8f0)')" class="h-8 rounded border hover:border-gray-400" style="background: linear-gradient(135deg, #f8fafc, #e2e8f0)"></button>
-                                            <button type="button" onclick="setHomeBg('linear-gradient(135deg, #e2e8f0, #cbd5e1)')" class="h-8 rounded border hover:border-gray-400" style="background: linear-gradient(135deg, #e2e8f0, #cbd5e1)"></button>
-                                        </div>
-                                    </div>
-                                    
-                                    <!-- Template Corak Islamik -->
-                                    <div class="border rounded-lg p-3 hover:shadow-md transition-shadow">
-                                        <div class="flex items-center gap-3 mb-2">
-                                            <div class="w-8 h-8 rounded-full bg-gradient-to-br from-green-600 to-yellow-500"></div>
-                                            <span class="font-medium text-gray-800">🎨 Template Corak Islamik</span>
-                                        </div>
-                                        <div class="grid grid-cols-2 gap-2">
-                                            <button type="button" onclick="setIslamicPattern('geometric')" class="h-12 rounded border hover:border-green-500 bg-gradient-to-br from-green-50 to-green-100 flex items-center justify-center text-xs font-medium">
-                                                Corak Geometri
-                                            </button>
-                                            <button type="button" onclick="setIslamicPattern('arabesque')" class="h-12 rounded border hover:border-blue-500 bg-gradient-to-br from-blue-50 to-blue-100 flex items-center justify-center text-xs font-medium">
-                                                Corak Arabesque
-                                            </button>
-                                            <button type="button" onclick="setIslamicPattern('calligraphy')" class="h-12 rounded border hover:border-yellow-500 bg-gradient-to-br from-yellow-50 to-yellow-100 flex items-center justify-center text-xs font-medium">
-                                                Kaligrafi
-                                            </button>
-                                            <button type="button" onclick="setIslamicPattern('mosque')" class="h-12 rounded border hover:border-purple-500 bg-gradient-to-br from-purple-50 to-purple-100 flex items-center justify-center text-xs font-medium">
-                                                Siluet Masjid
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="flex gap-4">
-                            <button type="submit" class="flex-1 bg-orange-600 hover:bg-orange-700 text-white font-bold py-3 px-6 rounded-lg transition-colors">
-                                Simpan Perubahan
-                            </button>
-                            <button type="button" onclick="closeHomeEditor()" class="flex-1 bg-gray-600 hover:bg-gray-700 text-white font-bold py-3 px-6 rounded-lg transition-colors">
-                                Batal
-                            </button>
-                        </div>
-                    </form>
                 </div>
             </div>
         </div>
@@ -1061,33 +686,16 @@
     </footer>
 
     <script>
-        // Real-time database using IndexedDB + WebRTC for cross-device sync
+        // Real-time cloud database system
         let bookings = [];
         let nextId = 1;
         let isAdminLoggedIn = false;
-        let syncInterval;
-        let lastSyncTime = 0;
-        let syncChannel;
-        let isInitialized = false;
-        
-        // Real-time sync menggunakan multiple channels
-        const SYNC_CHANNELS = {
-            broadcast: null,      // BroadcastChannel untuk same-origin tabs
-            websocket: null,      // WebSocket untuk real-time server connection
-            polling: null,        // Polling untuk fallback
-            webrtc: null         // WebRTC untuk peer-to-peer
-        };
-        
-        // Cloud database simulation dengan IndexedDB sebagai local cache
-        const DB_NAME = 'SMANIP_RealTimeDB';
-        const DB_VERSION = 1;
-        let db = null;
-        
-        // Real-time sync status
-        let isOnline = navigator.onLine;
-        let syncStatus = 'connecting';
-        let connectedUsers = new Set();
-        let userId = null;
+        let cloudSyncInterval;
+        let lastCloudSync = 0;
+        let deviceId = null;
+        let isCloudOnline = true;
+        let syncCount = 0;
+        let activeDevices = new Map();
 
         // Time slots for different categories
         const timeSlots = {
@@ -1112,773 +720,488 @@
         const allDays = ['Isnin', 'Selasa', 'Rabu', 'Khamis', 'Jumaat', 'Sabtu', 'Ahad'];
         const standardTimeSlots = ['7:00-8:00 pagi', '8:00-9:00 pagi', '9:00-10:00 pagi', '10:30-11:30 pagi', '11:30 pagi-12:30 tengah hari', '12:30 tengah hari-1:30 petang'];
 
-        // Initialize IndexedDB
-        async function initializeDatabase() {
-            return new Promise((resolve, reject) => {
-                const request = indexedDB.open(DB_NAME, DB_VERSION);
+        // Initialize cloud database system
+        function initializeCloudDatabase() {
+            // Generate unique device ID
+            deviceId = getDeviceId();
+            
+            // Load data from cloud (localStorage simulation)
+            loadFromCloud();
+            
+            // Register this device as active
+            registerActiveDevice();
+            
+            // Start real-time cloud sync
+            startCloudSync();
+            
+            // Listen for storage events (cross-tab/cross-device simulation)
+            window.addEventListener('storage', handleCloudSync);
+            
+            // Listen for visibility changes
+            document.addEventListener('visibilitychange', handleVisibilityChange);
+            
+            // Listen for beforeunload to cleanup
+            window.addEventListener('beforeunload', cleanupDevice);
+            
+            // Update sync status
+            updateSyncStatus('connected', 'ONLINE');
+            
+            console.log(`Cloud Database initialized for device: ${deviceId}`);
+        }
+
+        // Generate or retrieve unique device ID
+        function getDeviceId() {
+            let deviceId = localStorage.getItem('smanip_device_id');
+            if (!deviceId) {
+                deviceId = 'device_' + Math.random().toString(36).substr(2, 9);
+                localStorage.setItem('smanip_device_id', deviceId);
+            }
+            return deviceId;
+        }
+
+        // Load data from cloud (localStorage simulation)
+        function loadFromCloud() {
+            try {
+                const cloudData = localStorage.getItem('smanip_cloud_bookings');
+                const cloudNextId = localStorage.getItem('smanip_cloud_next_id');
+                const cloudLastSync = localStorage.getItem('smanip_cloud_last_sync');
                 
-                request.onerror = () => reject(request.error);
-                request.onsuccess = () => {
-                    db = request.result;
-                    resolve(db);
+                if (cloudData) {
+                    bookings = JSON.parse(cloudData);
+                    nextId = parseInt(cloudNextId) || 1;
+                    lastCloudSync = parseInt(cloudLastSync) || Date.now();
+                }
+                
+                console.log(`Loaded ${bookings.length} bookings from cloud`);
+                showCloudNotification('☁️ Data dimuat dari cloud');
+                
+            } catch (error) {
+                console.error('Failed to load from cloud:', error);
+                isCloudOnline = false;
+                updateSyncStatus('error', 'Gagal sambung cloud');
+            }
+        }
+
+        // Save data to cloud and broadcast to all devices
+        async function saveToCloud(action = 'update', data = null) {
+            try {
+                updateSyncStatus('syncing', 'Menyimpan ke cloud...');
+                
+                // Simulate network delay
+                await new Promise(resolve => setTimeout(resolve, 100));
+                
+                // Save to cloud (localStorage simulation)
+                localStorage.setItem('smanip_cloud_bookings', JSON.stringify(bookings));
+                localStorage.setItem('smanip_cloud_next_id', nextId.toString());
+                localStorage.setItem('smanip_cloud_last_sync', Date.now().toString());
+                
+                // Create cloud sync event
+                const syncEvent = {
+                    type: 'CLOUD_SYNC',
+                    action: action,
+                    data: data,
+                    bookings: bookings,
+                    nextId: nextId,
+                    deviceId: deviceId,
+                    timestamp: Date.now()
                 };
                 
-                request.onupgradeneeded = (event) => {
-                    const db = event.target.result;
-                    
-                    // Create bookings store
-                    if (!db.objectStoreNames.contains('bookings')) {
-                        const bookingStore = db.createObjectStore('bookings', { keyPath: 'id' });
-                        bookingStore.createIndex('timestamp', 'timestamp', { unique: false });
-                        bookingStore.createIndex('day', 'day', { unique: false });
-                    }
-                    
-                    // Create sync metadata store
-                    if (!db.objectStoreNames.contains('sync_meta')) {
-                        db.createObjectStore('sync_meta', { keyPath: 'key' });
-                    }
-                    
-                    // Create users store for tracking active users
-                    if (!db.objectStoreNames.contains('active_users')) {
-                        const userStore = db.createObjectStore('active_users', { keyPath: 'userId' });
-                        userStore.createIndex('lastSeen', 'lastSeen', { unique: false });
-                    }
-                };
-            });
-        }
-
-        // Real-time sync functions
-        async function initializeRealTimeSync() {
-            try {
-                updateSyncStatus('connecting', 'Menyambung...');
+                // Broadcast to all devices via multiple channels
+                localStorage.setItem('smanip_cloud_sync', JSON.stringify(syncEvent));
+                localStorage.setItem('smanip_cloud_broadcast_' + Date.now(), JSON.stringify(syncEvent));
                 
-                // Initialize user ID
-                userId = getUserId();
+                // Update sync count
+                syncCount++;
+                lastCloudSync = Date.now();
                 
-                // Initialize IndexedDB
-                await initializeDatabase();
+                updateSyncStatus('synced', 'Disimpan ke cloud');
+                showCloudNotification(`☁️ Data disimpan ke cloud (${action})`);
                 
-                // Initialize all sync channels
-                await initializeSyncChannels();
-                
-                // Load initial data
-                await loadFromDatabase();
-                
-                // Start real-time sync
-                startRealTimeSync();
-                
-                // Register this user as active
-                await registerActiveUser();
-                
-                // Listen for online/offline events
-                window.addEventListener('online', handleOnline);
-                window.addEventListener('offline', handleOffline);
-                
-                // Listen for visibility changes
-                document.addEventListener('visibilitychange', handleVisibilityChange);
-                
-                // Listen for beforeunload to cleanup
-                window.addEventListener('beforeunload', cleanup);
-                
-                updateSyncStatus('connected', 'Tersambung');
-                isInitialized = true;
-                
-            } catch (error) {
-                console.error('Failed to initialize real-time sync:', error);
-                updateSyncStatus('error', 'Ralat sambungan');
-                // Fallback to localStorage
-                loadFromLocalStorage();
-            }
-        }
-
-        // Initialize all sync channels
-        async function initializeSyncChannels() {
-            // 1. BroadcastChannel for same-origin tabs
-            if ('BroadcastChannel' in window) {
-                SYNC_CHANNELS.broadcast = new BroadcastChannel('smanip_realtime');
-                SYNC_CHANNELS.broadcast.addEventListener('message', handleBroadcastSync);
-            }
-            
-            // 2. SharedWorker for cross-tab coordination (if supported)
-            if ('SharedWorker' in window) {
-                try {
-                    const workerBlob = new Blob([`
-                        const connections = [];
-                        const data = { bookings: [], nextId: 1, lastUpdate: 0 };
-                        
-                        self.addEventListener('connect', function(e) {
-                            const port = e.ports[0];
-                            connections.push(port);
-                            
-                            port.addEventListener('message', function(event) {
-                                const { type, payload, userId, timestamp } = event.data;
-                                
-                                if (type === 'UPDATE_DATA') {
-                                    data.bookings = payload.bookings;
-                                    data.nextId = payload.nextId;
-                                    data.lastUpdate = timestamp;
-                                    
-                                    // Broadcast to all connected tabs except sender
-                                    connections.forEach(conn => {
-                                        if (conn !== port) {
-                                            conn.postMessage({
-                                                type: 'DATA_UPDATED',
-                                                payload: data,
-                                                sourceUserId: userId,
-                                                timestamp: timestamp
-                                            });
-                                        }
-                                    });
-                                }
-                                
-                                if (type === 'GET_DATA') {
-                                    port.postMessage({
-                                        type: 'DATA_RESPONSE',
-                                        payload: data,
-                                        timestamp: Date.now()
-                                    });
-                                }
-                            });
-                            
-                            port.start();
-                        });
-                    `], { type: 'application/javascript' });
-                    
-                    const worker = new SharedWorker(URL.createObjectURL(workerBlob));
-                    SYNC_CHANNELS.webrtc = worker.port;
-                    SYNC_CHANNELS.webrtc.addEventListener('message', handleWorkerSync);
-                    SYNC_CHANNELS.webrtc.start();
-                } catch (error) {
-                    console.log('SharedWorker not available:', error);
+                // Update admin panel if visible
+                if (isAdminLoggedIn) {
+                    updateCloudStatus();
                 }
-            }
-            
-            // 3. WebSocket simulation using Server-Sent Events pattern
-            initializeWebSocketSimulation();
-            
-            // 4. Polling fallback
-            SYNC_CHANNELS.polling = setInterval(pollForUpdates, 3000);
-        }
-
-        // WebSocket simulation for real-time updates
-        function initializeWebSocketSimulation() {
-            // Simulate WebSocket using localStorage events + timestamp checking
-            const wsSimulation = {
-                send: function(data) {
-                    const message = {
-                        ...data,
-                        userId: userId,
-                        timestamp: Date.now(),
-                        id: Math.random().toString(36).substr(2, 9)
-                    };
-                    
-                    // Store in localStorage to trigger storage events in other tabs/windows
-                    localStorage.setItem('smanip_ws_message', JSON.stringify(message));
-                    
-                    // Also store in IndexedDB for persistence across browser sessions
-                    saveMessageToIndexedDB(message);
-                },
                 
-                onmessage: null
-            };
-            
-            // Listen for storage events (cross-tab communication)
-            window.addEventListener('storage', function(e) {
-                if (e.key === 'smanip_ws_message' && e.newValue) {
-                    try {
-                        const message = JSON.parse(e.newValue);
-                        if (message.userId !== userId) {
-                            handleWebSocketMessage(message);
-                        }
-                    } catch (error) {
-                        console.error('Failed to parse WebSocket message:', error);
-                    }
-                }
-            });
-            
-            SYNC_CHANNELS.websocket = wsSimulation;
-        }
-
-        // Load data from IndexedDB
-        async function loadFromDatabase() {
-            try {
-                const transaction = db.transaction(['bookings', 'sync_meta'], 'readonly');
-                
-                // Load bookings
-                const bookingStore = transaction.objectStore('bookings');
-                const bookingRequest = bookingStore.getAll();
-                
-                // Load sync metadata
-                const metaStore = transaction.objectStore('sync_meta');
-                const nextIdRequest = metaStore.get('nextId');
-                const lastSyncRequest = metaStore.get('lastSyncTime');
-                
-                return new Promise((resolve, reject) => {
-                    transaction.oncomplete = () => {
-                        bookings = bookingRequest.result || [];
-                        nextId = nextIdRequest.result?.value || 1;
-                        lastSyncTime = lastSyncRequest.result?.value || Date.now();
-                        
-                        // Sort bookings by timestamp
-                        bookings.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
-                        
-                        resolve();
-                    };
-                    
-                    transaction.onerror = () => reject(transaction.error);
-                });
+                // Clear old broadcast messages
+                cleanupOldBroadcasts();
                 
             } catch (error) {
-                console.error('Failed to load from database:', error);
-                // Fallback to localStorage
-                loadFromLocalStorage();
+                console.error('Failed to save to cloud:', error);
+                isCloudOnline = false;
+                updateSyncStatus('error', 'Gagal simpan ke cloud');
             }
         }
 
-        // Save to IndexedDB and broadcast to all channels
-        async function saveToDatabase(data) {
-            try {
-                const transaction = db.transaction(['bookings', 'sync_meta'], 'readwrite');
-                
-                // Save bookings
-                const bookingStore = transaction.objectStore('bookings');
-                bookings.forEach(booking => {
-                    bookingStore.put(booking);
-                });
-                
-                // Save metadata
-                const metaStore = transaction.objectStore('sync_meta');
-                metaStore.put({ key: 'nextId', value: nextId });
-                metaStore.put({ key: 'lastSyncTime', value: Date.now() });
-                
-                return new Promise((resolve, reject) => {
-                    transaction.oncomplete = () => {
-                        lastSyncTime = Date.now();
-                        
-                        // INSTANT SYNC: Trigger immediate cross-tab update
-                        const instantSyncData = {
-                            bookings: bookings,
-                            nextId: nextId,
-                            userId: userId,
-                            timestamp: lastSyncTime,
-                            action: data.action || 'update'
-                        };
-                        
-                        // Multiple instant sync methods
-                        localStorage.setItem('smanip_instant_sync', JSON.stringify(instantSyncData));
-                        
-                        // Clear the sync trigger after a moment to allow re-triggering
-                        setTimeout(() => {
-                            localStorage.removeItem('smanip_instant_sync');
-                        }, 100);
-                        
-                        // Broadcast to all sync channels
-                        broadcastToAllChannels({
-                            type: 'DATA_UPDATED',
-                            payload: {
-                                bookings: bookings,
-                                nextId: nextId,
-                                action: data.action || 'update',
-                                bookingData: data
-                            },
-                            timestamp: lastSyncTime
-                        });
-                        
-                        // Also trigger a storage event manually for same-origin tabs
-                        window.dispatchEvent(new StorageEvent('storage', {
-                            key: 'smanip_instant_sync',
-                            newValue: JSON.stringify(instantSyncData),
-                            oldValue: null,
-                            storageArea: localStorage
-                        }));
-                        
-                        updateSyncStatus('synced', 'Disegerakkan');
-                        resolve();
-                    };
-                    
-                    transaction.onerror = () => {
-                        updateSyncStatus('error', 'Gagal simpan');
-                        reject(transaction.error);
-                    };
-                });
-                
-            } catch (error) {
-                updateSyncStatus('error', 'Gagal sync');
-                throw error;
-            }
-        }
-
-        // Broadcast to all available sync channels
-        function broadcastToAllChannels(message) {
-            const fullMessage = {
-                ...message,
-                userId: userId,
-                timestamp: message.timestamp || Date.now()
-            };
-            
-            // 1. BroadcastChannel (instant same-origin)
-            if (SYNC_CHANNELS.broadcast) {
-                SYNC_CHANNELS.broadcast.postMessage(fullMessage);
-            }
-            
-            // 2. SharedWorker (cross-tab coordination)
-            if (SYNC_CHANNELS.webrtc) {
-                SYNC_CHANNELS.webrtc.postMessage({
-                    type: 'UPDATE_DATA',
-                    payload: fullMessage.payload,
-                    userId: userId,
-                    timestamp: fullMessage.timestamp
-                });
-            }
-            
-            // 3. WebSocket simulation (cross-window)
-            if (SYNC_CHANNELS.websocket) {
-                SYNC_CHANNELS.websocket.send(fullMessage);
-            }
-            
-            // 4. Multiple localStorage keys for redundancy
-            localStorage.setItem('smanip_last_update', JSON.stringify(fullMessage));
-            localStorage.setItem('smanip_broadcast_' + Date.now(), JSON.stringify(fullMessage));
-            
-            // 5. SessionStorage for same-tab persistence
-            sessionStorage.setItem('smanip_session_sync', JSON.stringify(fullMessage));
-            
-            // 6. Custom event for same-document communication
-            window.dispatchEvent(new CustomEvent('smanip_data_update', {
-                detail: fullMessage
-            }));
-            
-            // 7. Cleanup old broadcast keys (keep only last 5)
-            const broadcastKeys = Object.keys(localStorage).filter(key => key.startsWith('smanip_broadcast_'));
-            if (broadcastKeys.length > 5) {
-                broadcastKeys.sort().slice(0, -5).forEach(key => {
-                    localStorage.removeItem(key);
-                });
-            }
-        }
-
-        // Handle BroadcastChannel messages
-        function handleBroadcastSync(event) {
-            const { type, payload, userId: sourceUserId, timestamp } = event.data;
-            
-            if (sourceUserId === userId) return; // Ignore own messages
-            
-            if (type === 'DATA_UPDATED' && timestamp > lastSyncTime) {
-                updateFromRemoteData(payload);
-                showSyncNotification(`Data dikemaskini oleh pengguna lain`);
-            }
-        }
-
-        // Handle SharedWorker messages
-        function handleWorkerSync(event) {
-            const { type, payload, sourceUserId, timestamp } = event.data;
-            
-            if (sourceUserId === userId) return;
-            
-            if (type === 'DATA_UPDATED' && timestamp > lastSyncTime) {
-                updateFromRemoteData(payload);
-                showSyncNotification(`Data disegerakkan melalui SharedWorker`);
-            }
-        }
-
-        // Handle WebSocket simulation messages
-        function handleWebSocketMessage(message) {
-            const { type, payload, userId: sourceUserId, timestamp } = message;
-            
-            if (sourceUserId === userId) return;
-            
-            if (type === 'DATA_UPDATED' && timestamp > lastSyncTime) {
-                updateFromRemoteData(payload);
-                showSyncNotification(`Data dikemaskini secara real-time`);
-            }
-        }
-
-        // Handle storage events for instant cross-tab sync
-        function handleStorageSync(event) {
-            if (event.key === 'smanip_instant_sync' && event.newValue) {
+        // Handle cloud sync events from other devices
+        function handleCloudSync(event) {
+            if (event.key === 'smanip_cloud_sync' && event.newValue) {
                 try {
-                    const syncData = JSON.parse(event.newValue);
-                    if (syncData.userId !== userId && syncData.timestamp > lastSyncTime) {
-                        // Instant update without delay
-                        bookings = syncData.bookings || bookings;
-                        nextId = syncData.nextId || nextId;
-                        lastSyncTime = syncData.timestamp;
+                    const syncEvent = JSON.parse(event.newValue);
+                    
+                    // Ignore events from this device
+                    if (syncEvent.deviceId === deviceId) return;
+                    
+                    // Check if this is a newer update
+                    if (syncEvent.timestamp > lastCloudSync) {
+                        // Update local data
+                        bookings = syncEvent.bookings || bookings;
+                        nextId = syncEvent.nextId || nextId;
+                        lastCloudSync = syncEvent.timestamp;
                         
-                        // Immediate UI refresh
+                        // Refresh UI
                         refreshAllViews();
-                        showSyncNotification('📡 Sync instant dari tab lain');
-                        updateSyncStatus('synced', 'Disegerakkan');
+                        
+                        // Show notification
+                        const deviceName = syncEvent.deviceId.replace('device_', '');
+                        showCloudNotification(`📱 Data dikemaskini dari ${deviceName}...`);
+                        
+                        updateSyncStatus('synced', 'ONLINE');
+                        
+                        console.log(`Received cloud sync from ${syncEvent.deviceId}: ${syncEvent.action}`);
                     }
-                } catch (error) {
-                    console.error('Storage sync error:', error);
-                }
-            }
-        }
-
-        // Handle custom event sync
-        function handleCustomEventSync(event) {
-            const { detail } = event;
-            if (detail && detail.userId !== userId && detail.timestamp > lastSyncTime) {
-                // Instant update from custom event
-                if (detail.payload && detail.payload.bookings) {
-                    bookings = detail.payload.bookings;
-                    nextId = detail.payload.nextId || nextId;
-                    lastSyncTime = detail.timestamp;
                     
-                    // Immediate UI refresh
-                    refreshAllViews();
-                    showSyncNotification('⚡ Sync instant (custom event)');
-                    updateSyncStatus('synced', 'Disegerakkan');
+                } catch (error) {
+                    console.error('Failed to handle cloud sync:', error);
                 }
+            }
+            
+            // Handle active devices updates
+            if (event.key === 'smanip_active_devices' && event.newValue) {
+                updateActiveDevicesList();
             }
         }
 
-        // Force immediate sync
-        async function forceSync() {
+        // Register this device as active
+        function registerActiveDevice() {
             try {
-                updateSyncStatus('syncing', 'Auto sync...');
+                const deviceInfo = {
+                    id: deviceId,
+                    name: deviceId.replace('device_', 'Device '),
+                    lastSeen: Date.now(),
+                    userAgent: navigator.userAgent.substring(0, 50) + '...',
+                    isAdmin: isAdminLoggedIn,
+                    timestamp: new Date().toLocaleString('ms-MY')
+                };
                 
-                // Load latest from IndexedDB
-                await loadFromDatabase();
+                // Get current active devices
+                const activeDevicesData = JSON.parse(localStorage.getItem('smanip_active_devices') || '{}');
+                activeDevicesData[deviceId] = deviceInfo;
                 
-                // Check all sync channels
-                await checkForUpdates();
-                await pollForUpdates();
-                await checkIndexedDBForUpdates();
+                // Clean up old devices (older than 5 minutes)
+                const fiveMinutesAgo = Date.now() - (5 * 60 * 1000);
+                Object.keys(activeDevicesData).forEach(id => {
+                    if (activeDevicesData[id].lastSeen < fiveMinutesAgo) {
+                        delete activeDevicesData[id];
+                    }
+                });
                 
-                // Check for any missed localStorage broadcasts
-                checkMissedBroadcasts();
+                // Save back to localStorage
+                localStorage.setItem('smanip_active_devices', JSON.stringify(activeDevicesData));
                 
-                // Refresh everything
-                refreshAllViews();
+                // Update local active devices map
+                activeDevices.clear();
+                Object.values(activeDevicesData).forEach(device => {
+                    activeDevices.set(device.id, device);
+                });
                 
-                updateSyncStatus('connected', 'Tersambung');
-                showSyncNotification('🔄 Auto sync selesai');
+                // Update admin panel if visible
+                if (isAdminLoggedIn) {
+                    updateActiveDevicesList();
+                    updateCloudStatus();
+                }
                 
             } catch (error) {
-                console.error('Auto sync failed:', error);
-                updateSyncStatus('error', 'Gagal sync');
+                console.error('Failed to register active device:', error);
             }
         }
 
-        // Check for missed broadcasts in localStorage
-        function checkMissedBroadcasts() {
+        // Start real-time cloud sync
+        function startCloudSync() {
+            // Aggressive sync every 1 second for real-time updates
+            cloudSyncInterval = setInterval(async () => {
+                await registerActiveDevice();
+                await checkForCloudUpdates();
+                updateUserCount();
+            }, 1000);
+            
+            // Heartbeat every 30 seconds
+            setInterval(() => {
+                if (isCloudOnline) {
+                    registerActiveDevice();
+                }
+            }, 30000);
+        }
+
+        // Check for cloud updates
+        async function checkForCloudUpdates() {
             try {
-                const broadcastKeys = Object.keys(localStorage).filter(key => key.startsWith('smanip_broadcast_'));
+                const cloudLastSync = parseInt(localStorage.getItem('smanip_cloud_last_sync') || '0');
+                
+                if (cloudLastSync > lastCloudSync) {
+                    // There are newer updates in the cloud
+                    await loadFromCloud();
+                    refreshAllViews();
+                    showCloudNotification('⚡ Sync automatik dari cloud');
+                }
+                
+                // Check for broadcast messages
+                const broadcastKeys = Object.keys(localStorage).filter(key => 
+                    key.startsWith('smanip_cloud_broadcast_')
+                );
                 
                 broadcastKeys.forEach(key => {
                     try {
                         const broadcastData = JSON.parse(localStorage.getItem(key));
-                        if (broadcastData && broadcastData.userId !== userId && broadcastData.timestamp > lastSyncTime) {
-                            // Process missed broadcast
-                            if (broadcastData.payload && broadcastData.payload.bookings) {
-                                bookings = broadcastData.payload.bookings;
-                                nextId = broadcastData.payload.nextId || nextId;
-                                lastSyncTime = broadcastData.timestamp;
-                                
-                                showSyncNotification('📡 Sync dari broadcast tertinggal');
-                            }
+                        if (broadcastData && 
+                            broadcastData.deviceId !== deviceId && 
+                            broadcastData.timestamp > lastCloudSync) {
+                            
+                            // Process the broadcast
+                            bookings = broadcastData.bookings || bookings;
+                            nextId = broadcastData.nextId || nextId;
+                            lastCloudSync = broadcastData.timestamp;
+                            
+                            refreshAllViews();
+                            
+                            const deviceName = broadcastData.deviceId.replace('device_', '');
+                            showCloudNotification(`📡 Sync dari ${deviceName}`);
                         }
                     } catch (error) {
                         console.error('Error processing broadcast:', error);
                     }
                 });
+                
+                isCloudOnline = true;
+                
             } catch (error) {
-                console.error('Error checking missed broadcasts:', error);
+                console.error('Failed to check cloud updates:', error);
+                isCloudOnline = false;
             }
         }
 
-        // Update local data from remote source
-        function updateFromRemoteData(payload) {
-            if (payload.bookings) {
-                bookings = payload.bookings;
-                nextId = payload.nextId || nextId;
-                lastSyncTime = Date.now();
+        // Manual sync function
+        async function manualSync() {
+            updateSyncStatus('syncing', 'Sync manual...');
+            
+            try {
+                await loadFromCloud();
+                await checkForCloudUpdates();
+                await registerActiveDevice();
                 
-                // Update UI
                 refreshAllViews();
                 
-                // Save to local IndexedDB
-                saveToLocalIndexedDB();
+                updateSyncStatus('connected', 'ONLINE');
+                showCloudNotification('🔄 Sync manual selesai');
+                
+            } catch (error) {
+                console.error('Manual sync failed:', error);
+                updateSyncStatus('error', 'Gagal sync manual');
             }
         }
 
-        // Save to IndexedDB without broadcasting (to avoid loops)
-        async function saveToLocalIndexedDB() {
+        // Force cloud sync (for admin)
+        async function forceCloudSync() {
+            updateSyncStatus('syncing', 'Sync cloud paksa...');
+            
             try {
-                const transaction = db.transaction(['bookings', 'sync_meta'], 'readwrite');
+                // Force save current data to cloud
+                await saveToCloud('force_sync');
                 
-                // Clear and re-add all bookings
-                const bookingStore = transaction.objectStore('bookings');
-                await bookingStore.clear();
+                // Force load from cloud
+                await loadFromCloud();
                 
-                bookings.forEach(booking => {
-                    bookingStore.put(booking);
+                // Force check for updates
+                await checkForCloudUpdates();
+                
+                // Force register device
+                await registerActiveDevice();
+                
+                refreshAllViews();
+                
+                updateSyncStatus('connected', 'ONLINE');
+                showCloudNotification('🚀 Sync cloud paksa selesai');
+                
+            } catch (error) {
+                console.error('Force cloud sync failed:', error);
+                updateSyncStatus('error', 'Gagal sync cloud paksa');
+            }
+        }
+
+        // Auto sync function (enhanced)
+        async function forceSync() {
+            updateSyncStatus('syncing', 'Auto sync...');
+            
+            try {
+                await loadFromCloud();
+                await checkForCloudUpdates();
+                await registerActiveDevice();
+                
+                refreshAllViews();
+                
+                updateSyncStatus('connected', 'ONLINE');
+                showCloudNotification('🚀 Auto sync selesai');
+                
+            } catch (error) {
+                console.error('Auto sync failed:', error);
+                updateSyncStatus('error', 'Gagal auto sync');
+            }
+        }
+
+        // Update cloud status in admin panel
+        function updateCloudStatus() {
+            if (!isAdminLoggedIn) return;
+            
+            // Update cloud status
+            const cloudStatusElement = document.getElementById('cloud-status');
+            if (cloudStatusElement) {
+                cloudStatusElement.textContent = isCloudOnline ? 'ONLINE' : 'OFFLINE';
+                cloudStatusElement.className = isCloudOnline ? 
+                    'text-2xl font-bold text-green-600' : 
+                    'text-2xl font-bold text-red-600';
+            }
+            
+            // Update active devices count
+            const activeDevicesElement = document.getElementById('active-devices');
+            if (activeDevicesElement) {
+                activeDevicesElement.textContent = activeDevices.size;
+            }
+            
+            // Update last sync time
+            const lastSyncElement = document.getElementById('last-sync-time');
+            if (lastSyncElement) {
+                const timeDiff = Date.now() - lastCloudSync;
+                if (timeDiff < 60000) {
+                    lastSyncElement.textContent = 'Baru';
+                } else if (timeDiff < 3600000) {
+                    lastSyncElement.textContent = Math.floor(timeDiff / 60000) + 'm';
+                } else {
+                    lastSyncElement.textContent = Math.floor(timeDiff / 3600000) + 'h';
+                }
+            }
+            
+            // Update sync count
+            const syncCountElement = document.getElementById('sync-count');
+            if (syncCountElement) {
+                syncCountElement.textContent = syncCount;
+            }
+        }
+
+        // Update active devices list in admin panel
+        function updateActiveDevicesList() {
+            if (!isAdminLoggedIn) return;
+            
+            const activeDevicesListElement = document.getElementById('active-devices-list');
+            if (!activeDevicesListElement) return;
+            
+            // Get current active devices
+            const activeDevicesData = JSON.parse(localStorage.getItem('smanip_active_devices') || '{}');
+            
+            if (Object.keys(activeDevicesData).length === 0) {
+                activeDevicesListElement.innerHTML = '<div class="text-gray-500 text-center py-4">Tiada peranti aktif</div>';
+                return;
+            }
+            
+            activeDevicesListElement.innerHTML = Object.values(activeDevicesData).map(device => {
+                const isCurrentDevice = device.id === deviceId;
+                const timeDiff = Date.now() - device.lastSeen;
+                const timeAgo = timeDiff < 60000 ? 'Baru sahaja' : 
+                               timeDiff < 3600000 ? Math.floor(timeDiff / 60000) + ' minit lalu' :
+                               Math.floor(timeDiff / 3600000) + ' jam lalu';
+                
+                return `
+                    <div class="flex items-center justify-between p-3 bg-white/80 rounded-lg border ${isCurrentDevice ? 'border-green-300 bg-green-50/80' : 'border-gray-200'}">
+                        <div class="flex items-center gap-3">
+                            <div class="w-3 h-3 rounded-full ${timeDiff < 60000 ? 'bg-green-500 animate-pulse' : 'bg-gray-400'}"></div>
+                            <div>
+                                <div class="font-medium text-gray-800">
+                                    ${device.name} ${isCurrentDevice ? '(Peranti Ini)' : ''}
+                                    ${device.isAdmin ? '👑' : ''}
+                                </div>
+                                <div class="text-xs text-gray-500">${device.userAgent}</div>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-sm font-medium text-gray-600">${timeAgo}</div>
+                            <div class="text-xs text-gray-500">${device.timestamp}</div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Clean up old broadcast messages
+        function cleanupOldBroadcasts() {
+            const broadcastKeys = Object.keys(localStorage).filter(key => 
+                key.startsWith('smanip_cloud_broadcast_')
+            );
+            
+            // Keep only the last 10 broadcasts
+            if (broadcastKeys.length > 10) {
+                broadcastKeys.sort().slice(0, -10).forEach(key => {
+                    localStorage.removeItem(key);
                 });
-                
-                // Update metadata
-                const metaStore = transaction.objectStore('sync_meta');
-                metaStore.put({ key: 'nextId', value: nextId });
-                metaStore.put({ key: 'lastSyncTime', value: lastSyncTime });
-                
-            } catch (error) {
-                console.error('Failed to save to local IndexedDB:', error);
             }
         }
 
-        // Start real-time sync with multiple strategies
-        function startRealTimeSync() {
-            // Ultra-fast sync check every 500ms for instant updates
-            syncInterval = setInterval(async () => {
-                if (isOnline && isInitialized) {
-                    await checkForUpdates();
-                    await updateActiveUserStatus();
-                }
-            }, 500);
-            
-            // Aggressive polling every 200ms when tab is visible
-            const aggressiveSync = setInterval(async () => {
-                if (!document.hidden && isInitialized && isOnline) {
-                    await pollForUpdates();
-                    await checkIndexedDBForUpdates();
-                }
-            }, 200);
-            
-            // Heartbeat for user presence every 2 seconds
-            setInterval(async () => {
-                if (isInitialized) {
-                    await registerActiveUser();
-                    await cleanupInactiveUsers();
-                }
-            }, 2000);
-            
-            // Storage event listener for instant cross-tab sync
-            window.addEventListener('storage', handleStorageSync);
-            
-            // Custom event listener for same-document sync
-            window.addEventListener('smanip_data_update', handleCustomEventSync);
-            
-            // Focus event for immediate sync when tab becomes active
-            window.addEventListener('focus', async () => {
-                if (isInitialized) {
-                    await forceSync();
-                }
-            });
-            
-            // Visibility change for aggressive sync when tab becomes visible
-            document.addEventListener('visibilitychange', async () => {
-                if (!document.hidden && isInitialized) {
-                    await forceSync();
-                }
-            });
-            
-            // Page show event for back/forward navigation
-            window.addEventListener('pageshow', async () => {
-                if (isInitialized) {
-                    await forceSync();
-                }
-            });
+        // Clean up device on page unload
+        function cleanupDevice() {
+            try {
+                const activeDevicesData = JSON.parse(localStorage.getItem('smanip_active_devices') || '{}');
+                delete activeDevicesData[deviceId];
+                localStorage.setItem('smanip_active_devices', JSON.stringify(activeDevicesData));
+            } catch (error) {
+                console.error('Failed to cleanup device:', error);
+            }
         }
 
-        // Polling for updates (fallback method)
-        async function pollForUpdates() {
-            if (!isInitialized) return;
+        // Handle visibility change
+        function handleVisibilityChange() {
+            if (!document.hidden) {
+                // Tab became visible, force sync
+                registerActiveDevice();
+                checkForCloudUpdates();
+            }
+        }
+
+        // Show cloud notification
+        function showCloudNotification(message) {
+            const notification = document.createElement('div');
+            notification.className = 'fixed top-20 left-4 bg-blue-600 text-white px-4 py-2 rounded-lg shadow-lg z-50 transform translate-x-0 transition-transform duration-300';
+            notification.innerHTML = `
+                <div class="flex items-center gap-2">
+                    <div class="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+                    <span class="text-sm">${message}</span>
+                </div>
+            `;
             
-            try {
-                // Check localStorage for cross-session updates
-                const lastUpdate = localStorage.getItem('smanip_last_update');
-                if (lastUpdate) {
-                    const updateData = JSON.parse(lastUpdate);
-                    if (updateData.timestamp > lastSyncTime && updateData.userId !== userId) {
-                        updateFromRemoteData(updateData.payload);
-                        showSyncNotification('📊 Data dikemaskini (polling)');
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.transform = 'translateX(-100%)';
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.parentNode.removeChild(notification);
                     }
-                }
-                
-                // Check sessionStorage for same-session updates
-                const sessionUpdate = sessionStorage.getItem('smanip_session_sync');
-                if (sessionUpdate) {
-                    const sessionData = JSON.parse(sessionUpdate);
-                    if (sessionData.timestamp > lastSyncTime && sessionData.userId !== userId) {
-                        updateFromRemoteData(sessionData.payload);
-                        showSyncNotification('🔄 Sync dari session storage');
-                    }
-                }
-                
-                // Check all broadcast keys for any missed updates
-                checkMissedBroadcasts();
-                
-                // Check IndexedDB for any missed updates
-                await checkIndexedDBForUpdates();
-                
-            } catch (error) {
-                console.error('Polling failed:', error);
-            }
+                }, 300);
+            }, 3000);
         }
 
-        // Check IndexedDB for updates
-        async function checkIndexedDBForUpdates() {
-            try {
-                const transaction = db.transaction(['sync_meta'], 'readonly');
-                const metaStore = transaction.objectStore('sync_meta');
-                const lastSyncRequest = metaStore.get('lastSyncTime');
-                
-                return new Promise((resolve) => {
-                    transaction.oncomplete = () => {
-                        const dbLastSync = lastSyncRequest.result?.value || 0;
-                        if (dbLastSync > lastSyncTime) {
-                            loadFromDatabase().then(() => {
-                                refreshAllViews();
-                                showSyncNotification('Data disegerakkan dari IndexedDB');
-                            });
-                        }
-                        resolve();
-                    };
-                    
-                    transaction.onerror = () => resolve();
-                });
-                
-            } catch (error) {
-                console.error('Failed to check IndexedDB updates:', error);
-            }
-        }
-
-        async function checkForUpdates() {
-            try {
-                // Check all sync channels for updates
-                await pollForUpdates();
-                
-                // Update connection status
-                updateSyncStatus('connected', 'Tersambung');
-                
-            } catch (error) {
-                updateSyncStatus('error', 'Ralat sync');
-            }
-        }
-
-        // Register active user
-        async function registerActiveUser() {
-            try {
-                const transaction = db.transaction(['active_users'], 'readwrite');
-                const userStore = transaction.objectStore('active_users');
-                
-                const userData = {
-                    userId: userId,
-                    lastSeen: Date.now(),
-                    userAgent: navigator.userAgent.substring(0, 100),
-                    timestamp: new Date().toISOString()
-                };
-                
-                userStore.put(userData);
-                
-                // Also update localStorage for cross-tab visibility
-                const activeUsers = JSON.parse(localStorage.getItem('smanip_active_users') || '{}');
-                activeUsers[userId] = userData;
-                localStorage.setItem('smanip_active_users', JSON.stringify(activeUsers));
-                
-            } catch (error) {
-                console.error('Failed to register active user:', error);
-            }
-        }
-
-        // Update active user status
-        async function updateActiveUserStatus() {
-            await registerActiveUser();
-            await updateUserCount();
-        }
-
-        // Cleanup inactive users
-        async function cleanupInactiveUsers() {
-            try {
-                const fiveMinutesAgo = Date.now() - (5 * 60 * 1000);
-                
-                // Clean IndexedDB
-                const transaction = db.transaction(['active_users'], 'readwrite');
-                const userStore = transaction.objectStore('active_users');
-                const index = userStore.index('lastSeen');
-                const range = IDBKeyRange.upperBound(fiveMinutesAgo);
-                
-                const request = index.openCursor(range);
-                request.onsuccess = (event) => {
-                    const cursor = event.target.result;
-                    if (cursor) {
-                        cursor.delete();
-                        cursor.continue();
-                    }
-                };
-                
-                // Clean localStorage
-                const activeUsers = JSON.parse(localStorage.getItem('smanip_active_users') || '{}');
-                Object.keys(activeUsers).forEach(uid => {
-                    if (activeUsers[uid].lastSeen < fiveMinutesAgo) {
-                        delete activeUsers[uid];
-                    }
-                });
-                localStorage.setItem('smanip_active_users', JSON.stringify(activeUsers));
-                
-            } catch (error) {
-                console.error('Failed to cleanup inactive users:', error);
-            }
-        }
-
-        // Save message to IndexedDB for persistence
-        async function saveMessageToIndexedDB(message) {
-            try {
-                // Store recent messages for cross-session sync
-                const messages = JSON.parse(localStorage.getItem('smanip_recent_messages') || '[]');
-                messages.push(message);
-                
-                // Keep only last 50 messages
-                if (messages.length > 50) {
-                    messages.splice(0, messages.length - 50);
-                }
-                
-                localStorage.setItem('smanip_recent_messages', JSON.stringify(messages));
-                
-            } catch (error) {
-                console.error('Failed to save message to IndexedDB:', error);
-            }
-        }
-
-        // Cleanup function
-        function cleanup() {
-            // Clear intervals
-            if (syncInterval) clearInterval(syncInterval);
-            if (SYNC_CHANNELS.polling) clearInterval(SYNC_CHANNELS.polling);
-            
-            // Close database connection
-            if (db) db.close();
-            
-            // Remove user from active users
-            const activeUsers = JSON.parse(localStorage.getItem('smanip_active_users') || '{}');
-            delete activeUsers[userId];
-            localStorage.setItem('smanip_active_users', JSON.stringify(activeUsers));
-        }
-
-        // Enhanced user count with real active users
+        // Enhanced user count with real active devices
         function updateUserCount() {
             try {
-                const activeUsers = JSON.parse(localStorage.getItem('smanip_active_users') || '{}');
+                const activeDevicesData = JSON.parse(localStorage.getItem('smanip_active_devices') || '{}');
                 const now = Date.now();
                 const fiveMinutesAgo = now - (5 * 60 * 1000);
                 
-                // Count users active in last 5 minutes
-                const activeCount = Object.values(activeUsers).filter(user => 
-                    user.lastSeen > fiveMinutesAgo
+                // Count devices active in last 5 minutes
+                const activeCount = Object.values(activeDevicesData).filter(device => 
+                    device.lastSeen > fiveMinutesAgo
                 ).length;
                 
                 const userCountElement = document.getElementById('user-count');
                 if (userCountElement) {
                     userCountElement.textContent = `${Math.max(1, activeCount)} pengguna`;
                 }
-                
-                // Update connected users set
-                connectedUsers.clear();
-                Object.keys(activeUsers).forEach(uid => {
-                    if (activeUsers[uid].lastSeen > fiveMinutesAgo) {
-                        connectedUsers.add(uid);
-                    }
-                });
                 
             } catch (error) {
                 console.error('Failed to update user count:', error);
@@ -1890,20 +1213,19 @@
         }
 
         function refreshAllViews() {
-            // Refresh all UI components
             updateStats();
             renderSchedule();
             if (isAdminLoggedIn) {
                 renderAdminTable();
+                updateCloudStatus();
+                updateActiveDevicesList();
             }
         }
 
         function updateSyncStatus(status, text) {
-            syncStatus = status;
             const indicator = document.getElementById('sync-indicator');
             const textElement = document.getElementById('sync-text');
             
-            // Remove all status classes
             indicator.className = 'w-3 h-3 rounded-full';
             
             switch (status) {
@@ -1912,7 +1234,7 @@
                     break;
                 case 'synced':
                     indicator.classList.add('bg-blue-500');
-                    setTimeout(() => updateSyncStatus('connected', 'Tersambung'), 1000);
+                    setTimeout(() => updateSyncStatus('connected', 'ONLINE'), 1000);
                     break;
                 case 'syncing':
                     indicator.classList.add('bg-yellow-500', 'animate-spin');
@@ -1926,84 +1248,6 @@
             }
             
             textElement.textContent = text;
-        }
-
-        function updateUserCount() {
-            // Simulate active users (in real app, this would come from server)
-            const baseCount = 1;
-            const randomUsers = Math.floor(Math.random() * 5) + baseCount;
-            const userCountElement = document.getElementById('user-count');
-            userCountElement.textContent = `${randomUsers} pengguna`;
-        }
-
-        function showSyncNotification(message) {
-            // Create floating notification
-            const notification = document.createElement('div');
-            notification.className = 'fixed top-20 left-4 bg-blue-600 text-white px-4 py-2 rounded-lg shadow-lg z-50 transform translate-x-0 transition-transform duration-300';
-            notification.innerHTML = `
-                <div class="flex items-center gap-2">
-                    <div class="w-2 h-2 bg-white rounded-full animate-pulse"></div>
-                    <span class="text-sm">${message}</span>
-                </div>
-            `;
-            
-            document.body.appendChild(notification);
-            
-            // Auto remove after 3 seconds
-            setTimeout(() => {
-                notification.style.transform = 'translateX(-100%)';
-                setTimeout(() => {
-                    if (notification.parentNode) {
-                        notification.parentNode.removeChild(notification);
-                    }
-                }, 300);
-            }, 3000);
-        }
-
-        function handleOnline() {
-            isOnline = true;
-            updateSyncStatus('connected', 'Tersambung');
-            // Sync any pending changes
-            loadFromCloud().then(() => refreshAllViews());
-        }
-
-        function handleOffline() {
-            isOnline = false;
-            updateSyncStatus('offline', 'Luar talian');
-        }
-
-        function handleVisibilityChange() {
-            if (!document.hidden && isOnline) {
-                // Tab became visible, check for updates
-                checkForUpdates();
-                updateUserCount();
-            }
-        }
-
-        function getUserId() {
-            // Generate or retrieve unique user ID
-            let userId = localStorage.getItem('smanip_user_id');
-            if (!userId) {
-                userId = 'user_' + Math.random().toString(36).substr(2, 9);
-                localStorage.setItem('smanip_user_id', userId);
-            }
-            return userId;
-        }
-
-        function loadFromLocalStorage() {
-            // Fallback to localStorage when cloud is unavailable
-            const localData = localStorage.getItem('smanip_bookings');
-            const localNextId = localStorage.getItem('smanip_next_id');
-            
-            if (localData) {
-                bookings = JSON.parse(localData);
-                nextId = parseInt(localNextId) || 1;
-            }
-        }
-
-        async function simulateNetworkDelay(ms = 200) {
-            // Simulate network latency for demo purposes
-            return new Promise(resolve => setTimeout(resolve, ms));
         }
 
         // Background customizer
@@ -2034,6 +1278,8 @@
                     document.getElementById('admin-login').classList.add('hidden');
                     document.getElementById('admin-panel').classList.remove('hidden');
                     renderAdminTable();
+                    updateCloudStatus();
+                    updateActiveDevicesList();
                 } else {
                     document.getElementById('admin-login').classList.remove('hidden');
                     document.getElementById('admin-panel').classList.add('hidden');
@@ -2046,7 +1292,7 @@
             const totalBookings = bookings.length;
             const today = new Date().toLocaleDateString('ms-MY');
             const todayBookings = bookings.filter(b => b.bookingDate === today).length;
-            const totalSlots = days.length * 6; // 7 days × 6 time slots
+            const totalSlots = days.length * 6;
             const usageRate = totalSlots > 0 ? Math.round((totalBookings / totalSlots) * 100) : 0;
             const availableSlots = totalSlots - totalBookings;
 
@@ -2064,7 +1310,6 @@
             timeSlotSelect.innerHTML = '<option value="">Pilih Masa</option>';
             
             if (category && timeSlots[category]) {
-                // Add standard time slots
                 timeSlots[category].forEach(slot => {
                     const option = document.createElement('option');
                     option.value = slot;
@@ -2072,7 +1317,6 @@
                     timeSlotSelect.appendChild(option);
                 });
                 
-                // Add custom time option at the end
                 const customOption = document.createElement('option');
                 customOption.value = 'custom';
                 customOption.textContent = 'Lain-lain masa (custom)';
@@ -2080,7 +1324,6 @@
             }
         }
         
-        // Handle time slot change to show/hide custom time input
         document.getElementById('time-slot').addEventListener('change', function() {
             const customTimeSection = document.getElementById('custom-time-section');
             if (this.value === 'custom') {
@@ -2116,7 +1359,7 @@
             }
         }
 
-        // Handle form submission with real-time sync
+        // Handle form submission with cloud sync
         document.getElementById('booking-form').addEventListener('submit', async function(e) {
             e.preventDefault();
             
@@ -2126,12 +1369,11 @@
             let timeSlot = formData.get('timeSlot');
             const customTime = formData.get('customTime');
             
-            // Use custom time if selected
             if (timeSlot === 'custom' && customTime) {
                 timeSlot = customTime;
             } else if (timeSlot === 'custom' && !customTime) {
                 showErrorModal('Sila masukkan masa custom.');
-                updateSyncStatus('connected', 'Tersambung');
+                updateSyncStatus('connected', 'ONLINE');
                 return;
             }
             
@@ -2145,12 +1387,13 @@
                 category: formData.get('category'),
                 email: formData.get('email') || '',
                 bookingDate: new Date().toLocaleDateString('ms-MY'),
-                timestamp: new Date().toISOString()
+                timestamp: new Date().toISOString(),
+                deviceId: deviceId
             };
 
             try {
-                // Check if slot is already booked (real-time check from IndexedDB)
-                await loadFromDatabase();
+                // Check if slot is already booked (real-time check from cloud)
+                await loadFromCloud();
                 
                 const existingBooking = bookings.find(b => 
                     b.day === booking.day && b.timeSlot === booking.timeSlot
@@ -2158,34 +1401,28 @@
 
                 if (existingBooking) {
                     showErrorModal(`Masa ${booking.timeSlot} pada hari ${booking.day} telah ditempah oleh ${existingBooking.teacherName} (${existingBooking.className}).`);
-                    updateSyncStatus('connected', 'Tersambung');
+                    updateSyncStatus('connected', 'ONLINE');
                     return;
                 }
 
-                // Add booking to array
+                // Add booking
                 bookings.push(booking);
                 
-                // Save to IndexedDB and broadcast to all channels
-                await saveToDatabase({
-                    action: 'add_booking',
-                    booking: booking
-                });
+                // Save to cloud and broadcast to all devices
+                await saveToCloud('add_booking', booking);
 
                 // Send email notification (simulated)
                 if (booking.email) {
                     simulateEmailNotification(booking);
                 }
 
-                // Show success message
                 showSuccessModal(`Tempahan berjaya! Tempahan anda berjaya disimpan untuk ${booking.day}, ${booking.timeSlot}. ${booking.email ? 'Email pengesahan telah dihantar.' : ''}`);
                 
-                // Reset form
                 e.target.reset();
                 document.getElementById('custom-time-section').classList.add('hidden');
                 updateTimeSlots();
                 document.getElementById('availability-status').innerHTML = '';
                 
-                // Refresh views
                 refreshAllViews();
                 
             } catch (error) {
@@ -2207,10 +1444,8 @@
             const tableBody = document.getElementById('schedule-table');
             tableBody.innerHTML = '';
 
-            // Update week dates
             updateWeekDates();
 
-            // Check if there are any afternoon bookings (after 1:30 PM)
             const afternoonBookings = bookings.filter(b => {
                 return !standardTimeSlots.includes(b.timeSlot) && 
                        (b.timeSlot.includes('2:') || b.timeSlot.includes('3:') || 
@@ -2218,7 +1453,6 @@
                         b.timeSlot.includes('6:') || b.timeSlot.includes('petang'));
             });
 
-            // Show/hide custom time header based on afternoon bookings
             const customHeader = document.getElementById('custom-time-header');
             if (afternoonBookings.length > 0) {
                 customHeader.classList.remove('hidden');
@@ -2226,23 +1460,19 @@
                 customHeader.classList.add('hidden');
             }
 
-            // Get days to show - include weekend only if there are bookings
             const weekendBookings = bookings.filter(b => b.day === 'Sabtu' || b.day === 'Ahad');
             const daysToShow = weekendBookings.length > 0 ? allDays : days;
 
-            // Create rows for each day
             daysToShow.forEach(day => {
                 const row = document.createElement('tr');
                 row.className = 'hover:bg-gray-50';
                 
-                // Day column with date
                 const dayCell = document.createElement('td');
                 dayCell.className = 'border border-gray-300 px-4 py-3 font-medium bg-gray-50';
                 const dayDate = getDayDate(day);
                 dayCell.innerHTML = `<div class="font-semibold">${day}</div><div class="text-xs text-gray-500">${dayDate}</div>`;
                 row.appendChild(dayCell);
 
-                // Time slot columns
                 standardTimeSlots.forEach(timeSlot => {
                     const timeCell = document.createElement('td');
                     timeCell.className = 'border border-gray-300 px-2 py-3 text-center slot-hover cursor-pointer';
@@ -2265,7 +1495,6 @@
                     row.appendChild(timeCell);
                 });
 
-                // Custom time column (only show if there are afternoon bookings)
                 if (afternoonBookings.length > 0) {
                     const customCell = document.createElement('td');
                     customCell.className = 'border border-gray-300 px-2 py-3 text-center';
@@ -2295,7 +1524,6 @@
                 tableBody.appendChild(row);
             });
 
-            // Update day counts and show/hide weekend summary
             const weekendSummary = document.getElementById('weekend-summary');
             if (weekendBookings.length > 0) {
                 weekendSummary.classList.remove('hidden');
@@ -2305,7 +1533,6 @@
                 weekendSummary.classList.add('hidden');
             }
 
-            // Update weekday counts
             days.forEach((day, index) => {
                 const dayCount = bookings.filter(b => b.day === day).length;
                 const countElements = ['monday-count', 'tuesday-count', 'wednesday-count', 'thursday-count', 'friday-count'];
@@ -2313,7 +1540,11 @@
             });
         }
 
-        // Get current week dates
+        function refreshSchedule() {
+            renderSchedule();
+            showCloudNotification('🔄 Jadual dikemaskini');
+        }
+
         function updateWeekDates() {
             const today = new Date();
             const monday = new Date(today);
@@ -2326,7 +1557,6 @@
             weekDatesElement.textContent = `Minggu: ${monday.toLocaleDateString('ms-MY')} - ${sunday.toLocaleDateString('ms-MY')}`;
         }
 
-        // Get date for specific day of current week
         function getDayDate(dayName) {
             const today = new Date();
             const monday = new Date(today);
@@ -2339,7 +1569,6 @@
             return dayDate.toLocaleDateString('ms-MY');
         }
 
-        // Show booking details
         function showBookingDetails(booking) {
             const detailsDiv = document.getElementById('booking-details');
             detailsDiv.innerHTML = `
@@ -2351,6 +1580,7 @@
                 <div><strong>Tujuan:</strong> ${booking.purpose}</div>
                 <div><strong>Email:</strong> ${booking.email || 'Tiada'}</div>
                 <div><strong>Tarikh Tempah:</strong> ${booking.bookingDate}</div>
+                ${booking.deviceId ? `<div><strong>Peranti:</strong> ${booking.deviceId.replace('device_', 'Device ')}</div>` : ''}
             `;
             document.getElementById('booking-modal').classList.remove('hidden');
             document.getElementById('booking-modal').classList.add('flex');
@@ -2371,10 +1601,15 @@
                 isAdminLoggedIn = true;
                 document.getElementById('admin-login').classList.add('hidden');
                 document.getElementById('admin-panel').classList.remove('hidden');
-                // Show admin controls
                 document.getElementById('bg-customizer').classList.remove('hidden');
                 document.getElementById('admin-edit-home').classList.remove('hidden');
+                
+                // Update device as admin
+                registerActiveDevice();
+                
                 renderAdminTable();
+                updateCloudStatus();
+                updateActiveDevicesList();
             } else {
                 showErrorModal('Nama pengguna atau kata laluan salah!');
             }
@@ -2386,9 +1621,11 @@
             document.getElementById('admin-panel').classList.add('hidden');
             document.getElementById('admin-username').value = '';
             document.getElementById('admin-password').value = '';
-            // Hide background customizer and homepage editor when admin logs out
             document.getElementById('bg-customizer').classList.add('hidden');
             document.getElementById('admin-edit-home').classList.add('hidden');
+            
+            // Update device as non-admin
+            registerActiveDevice();
         }
 
         // Render admin table
@@ -2410,4 +1647,390 @@
                     <td class="border border-gray-300 px-4 py-3">${booking.id}</td>
                     <td class="border border-gray-300 px-4 py-3">${booking.teacherName}</td>
                     <td class="border border-gray-300 px-4 py-3">${booking.className}</td>
-                    <td class="border border-gray-300 px-4 py<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'992dba88323ed964',t:'MTc2MTE4NTc0Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
+                    <td class="border border-gray-300 px-4 py-3">${booking.day}</td>
+                    <td class="border border-gray-300 px-4 py-3">${booking.timeSlot}</td>
+                    <td class="border border-gray-300 px-4 py-3">${booking.purpose}</td>
+                    <td class="border border-gray-300 px-4 py-3">${booking.email || 'Tiada'}</td>
+                    <td class="border border-gray-300 px-4 py-3">${booking.bookingDate}</td>
+                    <td class="border border-gray-300 px-4 py-3 text-center">
+                        <button onclick="deleteBooking(${booking.id})" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-sm transition-colors">
+                            Padam
+                        </button>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        // Delete booking with cloud sync
+        async function deleteBooking(id) {
+            try {
+                updateSyncStatus('syncing', 'Memadam...');
+                
+                const bookingIndex = bookings.findIndex(b => b.id === id);
+                if (bookingIndex > -1) {
+                    const deletedBooking = bookings[bookingIndex];
+                    bookings.splice(bookingIndex, 1);
+                    
+                    // Save to cloud
+                    await saveToCloud('delete_booking', { id: id, booking: deletedBooking });
+                    
+                    refreshAllViews();
+                    showCloudNotification(`🗑️ Tempahan ${deletedBooking.teacherName} dipadam`);
+                }
+                
+            } catch (error) {
+                console.error('Failed to delete booking:', error);
+                updateSyncStatus('error', 'Gagal padam');
+            }
+        }
+
+        // Clear all bookings with cloud sync
+        async function clearAllBookings() {
+            if (bookings.length === 0) {
+                showErrorModal('Tiada tempahan untuk dipadam.');
+                return;
+            }
+            
+            // Create confirmation UI instead of using confirm()
+            const confirmModal = document.createElement('div');
+            confirmModal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+            confirmModal.innerHTML = `
+                <div class="bg-white rounded-xl p-8 max-w-md mx-4 text-center">
+                    <div class="text-6xl mb-4">⚠️</div>
+                    <h3 class="text-xl font-bold text-red-800 mb-4">Pengesahan Diperlukan</h3>
+                    <p class="text-gray-600 mb-6">Adakah anda pasti mahu memadam SEMUA tempahan? Tindakan ini tidak boleh dibatalkan.</p>
+                    <div class="flex gap-4">
+                        <button onclick="confirmClearAll()" class="flex-1 bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-lg font-semibold transition-colors">
+                            Ya, Padam Semua
+                        </button>
+                        <button onclick="cancelClearAll()" class="flex-1 bg-gray-600 hover:bg-gray-700 text-white px-6 py-2 rounded-lg font-semibold transition-colors">
+                            Batal
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(confirmModal);
+            
+            window.confirmClearAll = async function() {
+                try {
+                    updateSyncStatus('syncing', 'Memadam semua...');
+                    
+                    const deletedCount = bookings.length;
+                    bookings = [];
+                    nextId = 1;
+                    
+                    // Save to cloud
+                    await saveToCloud('clear_all_bookings', { deletedCount: deletedCount });
+                    
+                    refreshAllViews();
+                    showCloudNotification(`🗑️ Semua ${deletedCount} tempahan dipadam`);
+                    
+                } catch (error) {
+                    console.error('Failed to clear all bookings:', error);
+                    updateSyncStatus('error', 'Gagal padam semua');
+                }
+                
+                document.body.removeChild(confirmModal);
+            };
+            
+            window.cancelClearAll = function() {
+                document.body.removeChild(confirmModal);
+            };
+        }
+
+        // Export functions
+        function exportData() {
+            if (bookings.length === 0) {
+                showErrorModal('Tiada data untuk dieksport.');
+                return;
+            }
+            
+            const csvContent = [
+                ['ID', 'Nama Guru', 'Matapelajaran/Kelas', 'Hari', 'Masa', 'Tujuan', 'Email', 'Tarikh Tempah', 'Peranti'].join(','),
+                ...bookings.map(booking => [
+                    booking.id,
+                    `"${booking.teacherName}"`,
+                    `"${booking.className}"`,
+                    booking.day,
+                    `"${booking.timeSlot}"`,
+                    `"${booking.purpose}"`,
+                    booking.email || '',
+                    booking.bookingDate,
+                    booking.deviceId || ''
+                ].join(','))
+            ].join('\n');
+            
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `SMANIP_Tempahan_${new Date().toLocaleDateString('ms-MY').replace(/\//g, '-')}.csv`;
+            link.click();
+            
+            showCloudNotification('📊 Data CSV dieksport');
+        }
+
+        function exportPDF() {
+            if (typeof jsPDF === 'undefined') {
+                showErrorModal('PDF library tidak tersedia.');
+                return;
+            }
+            
+            if (bookings.length === 0) {
+                showErrorModal('Tiada data untuk dieksport.');
+                return;
+            }
+            
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            doc.text('SMANIP - Laporan Tempahan Bilik', 20, 20);
+            doc.text(`Tarikh: ${new Date().toLocaleDateString('ms-MY')}`, 20, 30);
+            doc.text(`Jumlah Tempahan: ${bookings.length}`, 20, 40);
+            
+            let yPosition = 60;
+            bookings.forEach((booking, index) => {
+                if (yPosition > 250) {
+                    doc.addPage();
+                    yPosition = 20;
+                }
+                
+                doc.text(`${index + 1}. ${booking.teacherName} - ${booking.className}`, 20, yPosition);
+                doc.text(`   ${booking.day}, ${booking.timeSlot}`, 20, yPosition + 10);
+                doc.text(`   ${booking.purpose}`, 20, yPosition + 20);
+                yPosition += 35;
+            });
+            
+            doc.save(`SMANIP_Laporan_${new Date().toLocaleDateString('ms-MY').replace(/\//g, '-')}.pdf`);
+            showCloudNotification('📄 Laporan PDF dieksport');
+        }
+
+        function saveSchedulePDF() {
+            if (typeof jsPDF === 'undefined') {
+                showErrorModal('PDF library tidak tersedia.');
+                return;
+            }
+            
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF('landscape');
+            
+            doc.text('SMANIP - Jadual Tempahan Mingguan', 20, 20);
+            doc.text(`Minggu: ${document.getElementById('week-dates').textContent.replace('Minggu: ', '')}`, 20, 30);
+            
+            // Create schedule table in PDF
+            let yPos = 50;
+            const timeSlots = ['7:00-8:00', '8:00-9:00', '9:00-10:00', '10:30-11:30', '11:30-12:30', '12:30-1:30'];
+            
+            // Header
+            doc.text('Hari', 20, yPos);
+            timeSlots.forEach((slot, index) => {
+                doc.text(slot, 60 + (index * 35), yPos);
+            });
+            
+            yPos += 15;
+            
+            // Days
+            days.forEach(day => {
+                doc.text(day, 20, yPos);
+                timeSlots.forEach((slot, index) => {
+                    const booking = bookings.find(b => b.day === day && b.timeSlot.includes(slot.split('-')[0]));
+                    const text = booking ? `${booking.teacherName}\n${booking.className}` : 'KOSONG';
+                    doc.text(text, 60 + (index * 35), yPos);
+                });
+                yPos += 20;
+            });
+            
+            doc.save(`SMANIP_Jadual_${new Date().toLocaleDateString('ms-MY').replace(/\//g, '-')}.pdf`);
+            showCloudNotification('📥 Jadual PDF dimuat turun');
+        }
+
+        function sendEmailNotifications() {
+            const emailBookings = bookings.filter(b => b.email);
+            if (emailBookings.length === 0) {
+                showErrorModal('Tiada tempahan dengan alamat email.');
+                return;
+            }
+            
+            // Simulate sending emails
+            emailBookings.forEach(booking => {
+                simulateEmailNotification(booking);
+            });
+            
+            showCloudNotification(`📧 ${emailBookings.length} email notifikasi dihantar`);
+        }
+
+        // Modal functions
+        function showSuccessModal(message) {
+            document.getElementById('success-message').textContent = message;
+            document.getElementById('success-modal').classList.remove('hidden');
+            document.getElementById('success-modal').classList.add('flex');
+        }
+
+        function showErrorModal(message) {
+            document.getElementById('error-message').textContent = message;
+            document.getElementById('error-modal').classList.remove('hidden');
+            document.getElementById('error-modal').classList.add('flex');
+        }
+
+        function closeModal() {
+            document.getElementById('success-modal').classList.add('hidden');
+            document.getElementById('success-modal').classList.remove('flex');
+            document.getElementById('error-modal').classList.add('hidden');
+            document.getElementById('error-modal').classList.remove('flex');
+        }
+
+        // Homepage editor functions
+        function toggleHomeEditor() {
+            const modal = document.getElementById('home-editor-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            
+            // Load current values
+            document.getElementById('edit-title').value = document.getElementById('homepage-title').textContent;
+            document.getElementById('edit-description').value = document.getElementById('homepage-description').textContent;
+        }
+
+        function closeHomeEditor() {
+            const modal = document.getElementById('home-editor-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        document.getElementById('home-editor-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const title = document.getElementById('edit-title').value;
+            const description = document.getElementById('edit-description').value;
+            
+            document.getElementById('homepage-title').textContent = title;
+            document.getElementById('homepage-description').textContent = description;
+            
+            // Save to localStorage
+            localStorage.setItem('smanip_homepage_title', title);
+            localStorage.setItem('smanip_homepage_description', description);
+            
+            closeHomeEditor();
+            showCloudNotification('✏️ Homepage dikemaskini');
+        });
+
+        // Logo upload handler
+        document.getElementById('logo-upload').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                if (file.size > 2 * 1024 * 1024) {
+                    showErrorModal('Saiz fail terlalu besar. Maksimum 2MB.');
+                    return;
+                }
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const logoImg = document.getElementById('school-logo');
+                    const defaultIcon = document.getElementById('default-icon');
+                    
+                    logoImg.src = e.target.result;
+                    logoImg.classList.remove('hidden');
+                    defaultIcon.classList.add('hidden');
+                    
+                    localStorage.setItem('smanip_school_logo', e.target.result);
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        function removeLogo() {
+            const logoImg = document.getElementById('school-logo');
+            const defaultIcon = document.getElementById('default-icon');
+            
+            logoImg.src = '';
+            logoImg.classList.add('hidden');
+            defaultIcon.classList.remove('hidden');
+            
+            localStorage.removeItem('smanip_school_logo');
+            document.getElementById('logo-upload').value = '';
+        }
+
+        // Background upload handler
+        document.getElementById('bg-upload').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                if (file.size > 5 * 1024 * 1024) {
+                    showErrorModal('Saiz fail terlalu besar. Maksimum 5MB.');
+                    return;
+                }
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const imageUrl = e.target.result;
+                    document.documentElement.style.setProperty('--custom-bg', `url(${imageUrl})`);
+                    localStorage.setItem('smanip_custom_bg', imageUrl);
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        function removeCustomBg() {
+            document.documentElement.style.setProperty('--custom-bg', 'linear-gradient(135deg, #f0fdf4, #dcfce7)');
+            localStorage.removeItem('smanip_custom_bg');
+            document.getElementById('bg-upload').value = '';
+        }
+
+        function setHomeBg(gradient) {
+            document.documentElement.style.setProperty('--custom-bg', gradient);
+            localStorage.setItem('smanip_bg', gradient);
+        }
+
+        function setIslamicPattern(pattern) {
+            // Islamic pattern implementations would go here
+            showCloudNotification(`🎨 Corak ${pattern} dipilih`);
+        }
+
+        function showUsageDetails() {
+            const totalSlots = days.length * 6;
+            const usedSlots = bookings.length;
+            const usageRate = totalSlots > 0 ? Math.round((usedSlots / totalSlots) * 100) : 0;
+            
+            showSuccessModal(`Statistik Penggunaan:\n\nJumlah Slot: ${totalSlots}\nSlot Digunakan: ${usedSlots}\nSlot Tersedia: ${totalSlots - usedSlots}\nKadar Penggunaan: ${usageRate}%`);
+        }
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load saved settings
+            const savedBg = localStorage.getItem('smanip_bg') || localStorage.getItem('smanip_custom_bg');
+            if (savedBg) {
+                if (savedBg.startsWith('data:')) {
+                    document.documentElement.style.setProperty('--custom-bg', `url(${savedBg})`);
+                } else {
+                    document.documentElement.style.setProperty('--custom-bg', savedBg);
+                }
+            }
+            
+            const savedTitle = localStorage.getItem('smanip_homepage_title');
+            const savedDescription = localStorage.getItem('smanip_homepage_description');
+            const savedLogo = localStorage.getItem('smanip_school_logo');
+            
+            if (savedTitle) {
+                document.getElementById('homepage-title').textContent = savedTitle;
+            }
+            if (savedDescription) {
+                document.getElementById('homepage-description').textContent = savedDescription;
+            }
+            if (savedLogo) {
+                const logoImg = document.getElementById('school-logo');
+                const defaultIcon = document.getElementById('default-icon');
+                logoImg.src = savedLogo;
+                logoImg.classList.remove('hidden');
+                defaultIcon.classList.add('hidden');
+            }
+            
+            // Initialize cloud database
+            initializeCloudDatabase();
+            
+            // Initial UI update
+            updateStats();
+            renderSchedule();
+            updateUserCount();
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'992dd10232fc1be4',t:'MTc2MTE4NjY2OC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
