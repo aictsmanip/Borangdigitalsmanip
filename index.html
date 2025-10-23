@@ -2254,5 +2254,45 @@
             updateUserCount();
         });
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'992de10b679346c4',t:'MTc2MTE4NzMyNS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
-</html>
+<script>
+const SHEET_URL = "https://script.google.com/macros/s/AKfycbyC9giCeG5CJP4OTzsAFvjkNjHk8VnKlYi4rFzsatg4CWfgwXvC2N6Xuz3kwTOdFc77oA/exec";
+
+async function loadData() {
+  const res = await fetch(SHEET_URL);
+  const data = await res.json();
+  renderTable(data);
+}
+
+async function sendData() {
+  const nama = document.getElementById("nama").value;
+  const kelas = document.getElementById("kelas").value;
+  const tarikh = document.getElementById("tarikh").value;
+  const masa = document.getElementById("masa").value;
+  const status = "Tempahan Diterima";
+
+  await fetch(SHEET_URL, {
+    method: "POST",
+    body: JSON.stringify({ nama, kelas, tarikh, masa, status }),
+    headers: { "Content-Type": "application/json" }
+  });
+
+  loadData();
+}
+
+function renderTable(data) {
+  const table = document.getElementById("jadual");
+  table.innerHTML = "";
+  data.slice(1).forEach(row => {
+    const tr = document.createElement("tr");
+    row.forEach(cell => {
+      const td = document.createElement("td");
+      td.textContent = cell;
+      tr.appendChild(td);
+    });
+    table.appendChild(tr);
+  });
+}
+
+setInterval(loadData, 2000);
+loadData();
+</script>
