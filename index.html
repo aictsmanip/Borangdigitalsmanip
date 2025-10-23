@@ -834,7 +834,8 @@
 
         // Handle cloud sync events from other devices
         function handleCloudSync(event) {
-            if (event.key === 'smanip_cloud_sync' && event.newValue) {
+            // Handle all cloud sync events
+            if (event.key && event.key.startsWith('smanip_cloud_') && event.newValue) {
                 try {
                     const syncEvent = JSON.parse(event.newValue);
                     
@@ -868,6 +869,106 @@
             // Handle active devices updates
             if (event.key === 'smanip_active_devices' && event.newValue) {
                 updateActiveDevicesList();
+            }
+            
+            // Handle settings broadcast events
+            if (event.key && (event.key.startsWith('smanip_cloud_settings_') || 
+                             event.key.startsWith('smanip_cloud_logo_') || 
+                             event.key.startsWith('smanip_cloud_bg_')) && event.newValue) {
+                try {
+                    const settingsEvent = JSON.parse(event.newValue);
+                    
+                    // Ignore events from this device
+                    if (settingsEvent.deviceId === deviceId) return;
+                    
+                    const deviceName = settingsEvent.deviceId.replace('device_', 'Device ');
+                    
+                    switch (settingsEvent.action) {
+                        case 'update_homepage':
+                            document.getElementById('homepage-title').textContent = settingsEvent.data.title;
+                            document.getElementById('homepage-description').textContent = settingsEvent.data.description;
+                            showCloudNotification(`📱 Homepage dikemaskini dari ${deviceName}`);
+                            break;
+                            
+                        case 'update_logo':
+                            const logoImg = document.getElementById('school-logo');
+                            const defaultIcon = document.getElementById('default-icon');
+                            logoImg.src = settingsEvent.data.logo;
+                            logoImg.classList.remove('hidden');
+                            defaultIcon.classList.add('hidden');
+                            showCloudNotification(`📱 Logo dikemaskini dari ${deviceName}`);
+                            break;
+                            
+                        case 'remove_logo':
+                            const logoImg2 = document.getElementById('school-logo');
+                            const defaultIcon2 = document.getElementById('default-icon');
+                            logoImg2.src = '';
+                            logoImg2.classList.add('hidden');
+                            defaultIcon2.classList.remove('hidden');
+                            showCloudNotification(`📱 Logo dibuang dari ${deviceName}`);
+                            break;
+                            
+                        case 'update_background':
+                            const bg = settingsEvent.data.background;
+                            if (bg.startsWith('data:')) {
+                                document.documentElement.style.setProperty('--custom-bg', `url(${bg})`);
+                            } else {
+                                document.documentElement.style.setProperty('--custom-bg', bg);
+                            }
+                            showCloudNotification(`📱 Latar belakang dikemaskini dari ${deviceName}`);
+                            break;
+                            
+                        case 'remove_background':
+                            document.documentElement.style.setProperty('--custom-bg', settingsEvent.data.background);
+                            showCloudNotification(`📱 Latar belakang direset dari ${deviceName}`);
+                            break;
+                    }
+                    
+                } catch (error) {
+                    console.error('Failed to handle settings sync:', error);
+                }
+            }
+            
+            // Handle direct localStorage changes (fallback)
+            if (event.key === 'smanip_homepage_title' && event.newValue) {
+                document.getElementById('homepage-title').textContent = event.newValue;
+                showCloudNotification('📱 Tajuk homepage dikemaskini');
+            }
+            
+            if (event.key === 'smanip_homepage_description' && event.newValue) {
+                document.getElementById('homepage-description').textContent = event.newValue;
+                showCloudNotification('📱 Penerangan homepage dikemaskini');
+            }
+            
+            if (event.key === 'smanip_school_logo') {
+                const logoImg = document.getElementById('school-logo');
+                const defaultIcon = document.getElementById('default-icon');
+                
+                if (event.newValue) {
+                    logoImg.src = event.newValue;
+                    logoImg.classList.remove('hidden');
+                    defaultIcon.classList.add('hidden');
+                    showCloudNotification('📱 Logo sekolah dikemaskini');
+                } else {
+                    logoImg.src = '';
+                    logoImg.classList.add('hidden');
+                    defaultIcon.classList.remove('hidden');
+                    showCloudNotification('📱 Logo sekolah dibuang');
+                }
+            }
+            
+            if (event.key === 'smanip_bg' || event.key === 'smanip_custom_bg') {
+                if (event.newValue) {
+                    if (event.newValue.startsWith('data:')) {
+                        document.documentElement.style.setProperty('--custom-bg', `url(${event.newValue})`);
+                    } else {
+                        document.documentElement.style.setProperty('--custom-bg', event.newValue);
+                    }
+                    showCloudNotification('📱 Latar belakang dikemaskini');
+                } else {
+                    document.documentElement.style.setProperty('--custom-bg', 'linear-gradient(135deg, #f0fdf4, #dcfce7)');
+                    showCloudNotification('📱 Latar belakang direset');
+                }
             }
         }
 
@@ -970,6 +1071,55 @@
                         console.error('Error processing broadcast:', error);
                     }
                 });
+                
+                // Check for homepage settings updates
+                const currentTitle = document.getElementById('homepage-title').textContent;
+                const currentDescription = document.getElementById('homepage-description').textContent;
+                const savedTitle = localStorage.getItem('smanip_homepage_title');
+                const savedDescription = localStorage.getItem('smanip_homepage_description');
+                
+                if (savedTitle && savedTitle !== currentTitle) {
+                    document.getElementById('homepage-title').textContent = savedTitle;
+                    showCloudNotification('📱 Tajuk homepage dikemaskini');
+                }
+                
+                if (savedDescription && savedDescription !== currentDescription) {
+                    document.getElementById('homepage-description').textContent = savedDescription;
+                    showCloudNotification('📱 Penerangan homepage dikemaskini');
+                }
+                
+                // Check for logo updates
+                const savedLogo = localStorage.getItem('smanip_school_logo');
+                const currentLogo = document.getElementById('school-logo').src;
+                
+                if (savedLogo && savedLogo !== currentLogo) {
+                    const logoImg = document.getElementById('school-logo');
+                    const defaultIcon = document.getElementById('default-icon');
+                    logoImg.src = savedLogo;
+                    logoImg.classList.remove('hidden');
+                    defaultIcon.classList.add('hidden');
+                    showCloudNotification('📱 Logo sekolah dikemaskini');
+                } else if (!savedLogo && currentLogo) {
+                    const logoImg = document.getElementById('school-logo');
+                    const defaultIcon = document.getElementById('default-icon');
+                    logoImg.src = '';
+                    logoImg.classList.add('hidden');
+                    defaultIcon.classList.remove('hidden');
+                    showCloudNotification('📱 Logo sekolah dibuang');
+                }
+                
+                // Check for background updates
+                const savedBg = localStorage.getItem('smanip_bg') || localStorage.getItem('smanip_custom_bg');
+                const currentBg = document.documentElement.style.getPropertyValue('--custom-bg');
+                
+                if (savedBg && !currentBg.includes(savedBg.substring(0, 20))) {
+                    if (savedBg.startsWith('data:')) {
+                        document.documentElement.style.setProperty('--custom-bg', `url(${savedBg})`);
+                    } else {
+                        document.documentElement.style.setProperty('--custom-bg', savedBg);
+                    }
+                    showCloudNotification('📱 Latar belakang dikemaskini');
+                }
                 
                 isCloudOnline = true;
                 
@@ -1906,12 +2056,23 @@
             document.getElementById('homepage-title').textContent = title;
             document.getElementById('homepage-description').textContent = description;
             
-            // Save to localStorage
+            // Save to localStorage and broadcast to all devices
             localStorage.setItem('smanip_homepage_title', title);
             localStorage.setItem('smanip_homepage_description', description);
             
+            // Create broadcast event for cross-device sync
+            const settingsEvent = {
+                type: 'SETTINGS_SYNC',
+                action: 'update_homepage',
+                data: { title, description },
+                deviceId: deviceId,
+                timestamp: Date.now()
+            };
+            
+            localStorage.setItem('smanip_cloud_settings_' + Date.now(), JSON.stringify(settingsEvent));
+            
             closeHomeEditor();
-            showCloudNotification('✏️ Homepage dikemaskini');
+            showCloudNotification('✏️ Homepage dikemaskini dan disync');
         });
 
         // Logo upload handler
@@ -1933,6 +2094,18 @@
                     defaultIcon.classList.add('hidden');
                     
                     localStorage.setItem('smanip_school_logo', e.target.result);
+                    
+                    // Broadcast logo update to all devices
+                    const logoEvent = {
+                        type: 'SETTINGS_SYNC',
+                        action: 'update_logo',
+                        data: { logo: e.target.result },
+                        deviceId: deviceId,
+                        timestamp: Date.now()
+                    };
+                    
+                    localStorage.setItem('smanip_cloud_logo_' + Date.now(), JSON.stringify(logoEvent));
+                    showCloudNotification('📷 Logo dikemaskini dan disync');
                 };
                 reader.readAsDataURL(file);
             }
@@ -1948,6 +2121,18 @@
             
             localStorage.removeItem('smanip_school_logo');
             document.getElementById('logo-upload').value = '';
+            
+            // Broadcast logo removal to all devices
+            const logoEvent = {
+                type: 'SETTINGS_SYNC',
+                action: 'remove_logo',
+                data: { logo: null },
+                deviceId: deviceId,
+                timestamp: Date.now()
+            };
+            
+            localStorage.setItem('smanip_cloud_logo_' + Date.now(), JSON.stringify(logoEvent));
+            showCloudNotification('🗑️ Logo dibuang dan disync');
         }
 
         // Background upload handler
@@ -1964,6 +2149,18 @@
                     const imageUrl = e.target.result;
                     document.documentElement.style.setProperty('--custom-bg', `url(${imageUrl})`);
                     localStorage.setItem('smanip_custom_bg', imageUrl);
+                    
+                    // Broadcast background update to all devices
+                    const bgEvent = {
+                        type: 'SETTINGS_SYNC',
+                        action: 'update_background',
+                        data: { background: imageUrl },
+                        deviceId: deviceId,
+                        timestamp: Date.now()
+                    };
+                    
+                    localStorage.setItem('smanip_cloud_bg_' + Date.now(), JSON.stringify(bgEvent));
+                    showCloudNotification('🖼️ Latar belakang dikemaskini dan disync');
                 };
                 reader.readAsDataURL(file);
             }
@@ -1972,12 +2169,37 @@
         function removeCustomBg() {
             document.documentElement.style.setProperty('--custom-bg', 'linear-gradient(135deg, #f0fdf4, #dcfce7)');
             localStorage.removeItem('smanip_custom_bg');
+            localStorage.removeItem('smanip_bg');
             document.getElementById('bg-upload').value = '';
+            
+            // Broadcast background removal to all devices
+            const bgEvent = {
+                type: 'SETTINGS_SYNC',
+                action: 'remove_background',
+                data: { background: 'linear-gradient(135deg, #f0fdf4, #dcfce7)' },
+                deviceId: deviceId,
+                timestamp: Date.now()
+            };
+            
+            localStorage.setItem('smanip_cloud_bg_' + Date.now(), JSON.stringify(bgEvent));
+            showCloudNotification('🗑️ Latar belakang direset dan disync');
         }
 
         function setHomeBg(gradient) {
             document.documentElement.style.setProperty('--custom-bg', gradient);
             localStorage.setItem('smanip_bg', gradient);
+            
+            // Broadcast background update to all devices
+            const bgEvent = {
+                type: 'SETTINGS_SYNC',
+                action: 'update_background',
+                data: { background: gradient },
+                deviceId: deviceId,
+                timestamp: Date.now()
+            };
+            
+            localStorage.setItem('smanip_cloud_bg_' + Date.now(), JSON.stringify(bgEvent));
+            showCloudNotification('🎨 Tema dikemaskini dan disync');
         }
 
         function setIslamicPattern(pattern) {
@@ -2032,5 +2254,5 @@
             updateUserCount();
         });
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'992dd10232fc1be4',t:'MTc2MTE4NjY2OC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'992de10b679346c4',t:'MTc2MTE4NzMyNS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
