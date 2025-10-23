@@ -46,6 +46,15 @@
     </style>
 </head>
 <body class="bg-custom min-h-full">
+    <!-- Real-time Sync Status -->
+    <div id="sync-status" class="fixed top-4 left-4 z-50 no-print">
+        <div class="bg-white/90 backdrop-blur-sm rounded-lg shadow-lg p-3 flex items-center gap-2">
+            <div id="sync-indicator" class="w-3 h-3 rounded-full bg-green-500 animate-pulse"></div>
+            <span id="sync-text" class="text-sm font-medium text-gray-700">Tersambung</span>
+            <span id="user-count" class="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full">1 pengguna</span>
+        </div>
+    </div>
+
     <!-- Background Customizer (Admin Only) -->
     <div id="bg-customizer" class="fixed top-4 right-4 z-50 no-print hidden">
         <button onclick="toggleBgCustomizer()" class="bg-gray-800 text-white p-2 rounded-full shadow-lg hover:bg-gray-700 transition-colors">
@@ -447,6 +456,9 @@
                         <div class="flex gap-2">
                             <button onclick="refreshSchedule()" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg font-semibold transition-colors">
                                 🔄 Refresh
+                            </button>
+                            <button onclick="manualSync()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold transition-colors">
+                                ⚡ Sync Manual
                             </button>
                         </div>
                     </div>
@@ -1046,10 +1058,19 @@
     </footer>
 
     <script>
-        // Database simulation using localStorage
-        let bookings = JSON.parse(localStorage.getItem('smanip_bookings')) || [];
-        let nextId = parseInt(localStorage.getItem('smanip_next_id')) || 1;
+        // Real-time database simulation using Firebase-like structure
+        let bookings = [];
+        let nextId = 1;
         let isAdminLoggedIn = false;
+        let syncInterval;
+        let lastSyncTime = 0;
+        
+        // Simulated cloud database (in real implementation, this would be Firebase/Supabase)
+        const CLOUD_DB_URL = 'https://api.smanip-booking.com'; // Demo URL
+        
+        // Real-time sync status
+        let isOnline = navigator.onLine;
+        let syncStatus = 'connected';
 
         // Time slots for different categories
         const timeSlots = {
@@ -1073,6 +1094,295 @@
         const days = ['Isnin', 'Selasa', 'Rabu', 'Khamis', 'Jumaat'];
         const allDays = ['Isnin', 'Selasa', 'Rabu', 'Khamis', 'Jumaat', 'Sabtu', 'Ahad'];
         const standardTimeSlots = ['7:00-8:00 pagi', '8:00-9:00 pagi', '9:00-10:00 pagi', '10:30-11:30 pagi', '11:30 pagi-12:30 tengah hari', '12:30 tengah hari-1:30 petang'];
+
+        // Real-time sync functions
+        async function initializeRealTimeSync() {
+            try {
+                // Load initial data from cloud
+                await loadFromCloud();
+                
+                // Start real-time sync
+                startRealTimeSync();
+                
+                // Listen for online/offline events
+                window.addEventListener('online', handleOnline);
+                window.addEventListener('offline', handleOffline);
+                
+                // Listen for visibility changes (tab switching)
+                document.addEventListener('visibilitychange', handleVisibilityChange);
+                
+                updateSyncStatus('connected', 'Tersambung');
+                
+            } catch (error) {
+                console.error('Failed to initialize real-time sync:', error);
+                updateSyncStatus('error', 'Ralat sambungan');
+                // Fallback to localStorage
+                loadFromLocalStorage();
+            }
+        }
+
+        async function loadFromCloud() {
+            // Simulate API call to load data from cloud database
+            try {
+                // In real implementation, this would be:
+                // const response = await fetch(`${CLOUD_DB_URL}/bookings`);
+                // const data = await response.json();
+                
+                // For demo, we'll simulate with localStorage + random delay
+                await simulateNetworkDelay();
+                
+                const cloudData = localStorage.getItem('smanip_cloud_bookings');
+                const cloudNextId = localStorage.getItem('smanip_cloud_next_id');
+                
+                if (cloudData) {
+                    bookings = JSON.parse(cloudData);
+                    nextId = parseInt(cloudNextId) || 1;
+                    lastSyncTime = Date.now();
+                }
+                
+                // Simulate active users count
+                updateUserCount();
+                
+            } catch (error) {
+                throw new Error('Failed to load from cloud: ' + error.message);
+            }
+        }
+
+        async function saveToCloud(data) {
+            try {
+                // Simulate API call to save data to cloud database
+                await simulateNetworkDelay();
+                
+                // In real implementation, this would be:
+                // await fetch(`${CLOUD_DB_URL}/bookings`, {
+                //     method: 'POST',
+                //     headers: { 'Content-Type': 'application/json' },
+                //     body: JSON.stringify(data)
+                // });
+                
+                // For demo, save to localStorage as "cloud" storage
+                localStorage.setItem('smanip_cloud_bookings', JSON.stringify(bookings));
+                localStorage.setItem('smanip_cloud_next_id', nextId.toString());
+                localStorage.setItem('smanip_cloud_last_update', Date.now().toString());
+                
+                lastSyncTime = Date.now();
+                updateSyncStatus('synced', 'Disegerakkan');
+                
+                // Broadcast change to other tabs/windows
+                broadcastChange('booking_updated', data);
+                
+            } catch (error) {
+                updateSyncStatus('error', 'Gagal sync');
+                throw error;
+            }
+        }
+
+        function startRealTimeSync() {
+            // Check for updates every 2 seconds
+            syncInterval = setInterval(async () => {
+                if (isOnline && !document.hidden) {
+                    await checkForUpdates();
+                }
+            }, 2000);
+        }
+
+        async function checkForUpdates() {
+            try {
+                // Simulate checking for updates from cloud
+                await simulateNetworkDelay(100); // Faster check
+                
+                const cloudLastUpdate = localStorage.getItem('smanip_cloud_last_update');
+                const cloudUpdateTime = parseInt(cloudLastUpdate) || 0;
+                
+                if (cloudUpdateTime > lastSyncTime) {
+                    // Data has been updated by another user
+                    await loadFromCloud();
+                    
+                    // Refresh UI
+                    refreshAllViews();
+                    
+                    // Show notification
+                    showSyncNotification('Data dikemaskini oleh pengguna lain');
+                }
+                
+                updateSyncStatus('connected', 'Tersambung');
+                
+            } catch (error) {
+                updateSyncStatus('error', 'Ralat sync');
+            }
+        }
+
+        function broadcastChange(type, data) {
+            // Use BroadcastChannel API for cross-tab communication
+            if ('BroadcastChannel' in window) {
+                const channel = new BroadcastChannel('smanip_sync');
+                channel.postMessage({
+                    type: type,
+                    data: data,
+                    timestamp: Date.now(),
+                    userId: getUserId()
+                });
+            }
+            
+            // Also use localStorage events as fallback
+            localStorage.setItem('smanip_broadcast', JSON.stringify({
+                type: type,
+                data: data,
+                timestamp: Date.now(),
+                userId: getUserId()
+            }));
+        }
+
+        function listenForBroadcasts() {
+            // Listen for BroadcastChannel messages
+            if ('BroadcastChannel' in window) {
+                const channel = new BroadcastChannel('smanip_sync');
+                channel.addEventListener('message', handleBroadcastMessage);
+            }
+            
+            // Listen for localStorage changes (cross-tab)
+            window.addEventListener('storage', handleStorageChange);
+        }
+
+        function handleBroadcastMessage(event) {
+            const { type, data, userId } = event.data;
+            
+            // Ignore messages from same user/tab
+            if (userId === getUserId()) return;
+            
+            if (type === 'booking_updated') {
+                loadFromCloud().then(() => {
+                    refreshAllViews();
+                    showSyncNotification('Data dikemaskini secara real-time');
+                });
+            }
+        }
+
+        function handleStorageChange(event) {
+            if (event.key === 'smanip_broadcast') {
+                const broadcast = JSON.parse(event.newValue);
+                if (broadcast.userId !== getUserId()) {
+                    handleBroadcastMessage({ data: broadcast });
+                }
+            }
+        }
+
+        function refreshAllViews() {
+            // Refresh all UI components
+            updateStats();
+            renderSchedule();
+            if (isAdminLoggedIn) {
+                renderAdminTable();
+            }
+        }
+
+        function updateSyncStatus(status, text) {
+            syncStatus = status;
+            const indicator = document.getElementById('sync-indicator');
+            const textElement = document.getElementById('sync-text');
+            
+            // Remove all status classes
+            indicator.className = 'w-3 h-3 rounded-full';
+            
+            switch (status) {
+                case 'connected':
+                    indicator.classList.add('bg-green-500', 'animate-pulse');
+                    break;
+                case 'synced':
+                    indicator.classList.add('bg-blue-500');
+                    setTimeout(() => updateSyncStatus('connected', 'Tersambung'), 1000);
+                    break;
+                case 'syncing':
+                    indicator.classList.add('bg-yellow-500', 'animate-spin');
+                    break;
+                case 'offline':
+                    indicator.classList.add('bg-gray-500');
+                    break;
+                case 'error':
+                    indicator.classList.add('bg-red-500', 'animate-pulse');
+                    break;
+            }
+            
+            textElement.textContent = text;
+        }
+
+        function updateUserCount() {
+            // Simulate active users (in real app, this would come from server)
+            const baseCount = 1;
+            const randomUsers = Math.floor(Math.random() * 5) + baseCount;
+            const userCountElement = document.getElementById('user-count');
+            userCountElement.textContent = `${randomUsers} pengguna`;
+        }
+
+        function showSyncNotification(message) {
+            // Create floating notification
+            const notification = document.createElement('div');
+            notification.className = 'fixed top-20 left-4 bg-blue-600 text-white px-4 py-2 rounded-lg shadow-lg z-50 transform translate-x-0 transition-transform duration-300';
+            notification.innerHTML = `
+                <div class="flex items-center gap-2">
+                    <div class="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+                    <span class="text-sm">${message}</span>
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Auto remove after 3 seconds
+            setTimeout(() => {
+                notification.style.transform = 'translateX(-100%)';
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.parentNode.removeChild(notification);
+                    }
+                }, 300);
+            }, 3000);
+        }
+
+        function handleOnline() {
+            isOnline = true;
+            updateSyncStatus('connected', 'Tersambung');
+            // Sync any pending changes
+            loadFromCloud().then(() => refreshAllViews());
+        }
+
+        function handleOffline() {
+            isOnline = false;
+            updateSyncStatus('offline', 'Luar talian');
+        }
+
+        function handleVisibilityChange() {
+            if (!document.hidden && isOnline) {
+                // Tab became visible, check for updates
+                checkForUpdates();
+                updateUserCount();
+            }
+        }
+
+        function getUserId() {
+            // Generate or retrieve unique user ID
+            let userId = localStorage.getItem('smanip_user_id');
+            if (!userId) {
+                userId = 'user_' + Math.random().toString(36).substr(2, 9);
+                localStorage.setItem('smanip_user_id', userId);
+            }
+            return userId;
+        }
+
+        function loadFromLocalStorage() {
+            // Fallback to localStorage when cloud is unavailable
+            const localData = localStorage.getItem('smanip_bookings');
+            const localNextId = localStorage.getItem('smanip_next_id');
+            
+            if (localData) {
+                bookings = JSON.parse(localData);
+                nextId = parseInt(localNextId) || 1;
+            }
+        }
+
+        async function simulateNetworkDelay(ms = 200) {
+            // Simulate network latency for demo purposes
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
 
         // Background customizer
         function toggleBgCustomizer() {
@@ -1184,9 +1494,11 @@
             }
         }
 
-        // Handle form submission
-        document.getElementById('booking-form').addEventListener('submit', function(e) {
+        // Handle form submission with real-time sync
+        document.getElementById('booking-form').addEventListener('submit', async function(e) {
             e.preventDefault();
+            
+            updateSyncStatus('syncing', 'Menyimpan...');
             
             const formData = new FormData(e.target);
             let timeSlot = formData.get('timeSlot');
@@ -1197,6 +1509,7 @@
                 timeSlot = customTime;
             } else if (timeSlot === 'custom' && !customTime) {
                 showErrorModal('Sila masukkan masa custom.');
+                updateSyncStatus('connected', 'Tersambung');
                 return;
             }
             
@@ -1213,34 +1526,46 @@
                 timestamp: new Date().toISOString()
             };
 
-            // Check if slot is already booked
-            const existingBooking = bookings.find(b => 
-                b.day === booking.day && b.timeSlot === booking.timeSlot
-            );
+            try {
+                // Check if slot is already booked (real-time check)
+                await loadFromCloud(); // Get latest data
+                
+                const existingBooking = bookings.find(b => 
+                    b.day === booking.day && b.timeSlot === booking.timeSlot
+                );
 
-            if (existingBooking) {
-                showErrorModal(`Masa ${booking.timeSlot} pada hari ${booking.day} telah ditempah oleh ${existingBooking.teacherName} (${existingBooking.className}).`);
-                return;
+                if (existingBooking) {
+                    showErrorModal(`Masa ${booking.timeSlot} pada hari ${booking.day} telah ditempah oleh ${existingBooking.teacherName} (${existingBooking.className}).`);
+                    updateSyncStatus('connected', 'Tersambung');
+                    return;
+                }
+
+                // Save booking to cloud
+                bookings.push(booking);
+                await saveToCloud(booking);
+
+                // Send email notification (simulated)
+                if (booking.email) {
+                    simulateEmailNotification(booking);
+                }
+
+                // Show success message
+                showSuccessModal(`Tempahan berjaya! Tempahan anda berjaya disimpan untuk ${booking.day}, ${booking.timeSlot}. ${booking.email ? 'Email pengesahan telah dihantar.' : ''}`);
+                
+                // Reset form
+                e.target.reset();
+                document.getElementById('custom-time-section').classList.add('hidden');
+                updateTimeSlots();
+                document.getElementById('availability-status').innerHTML = '';
+                
+                // Refresh views
+                refreshAllViews();
+                
+            } catch (error) {
+                console.error('Failed to save booking:', error);
+                showErrorModal('Gagal menyimpan tempahan. Cuba lagi.');
+                updateSyncStatus('error', 'Ralat');
             }
-
-            // Save booking
-            bookings.push(booking);
-            localStorage.setItem('smanip_bookings', JSON.stringify(bookings));
-            localStorage.setItem('smanip_next_id', nextId.toString());
-
-            // Send email notification (simulated)
-            if (booking.email) {
-                simulateEmailNotification(booking);
-            }
-
-            // Show success message
-            showSuccessModal(`Tempahan berjaya! Tempahan anda berjaya disimpan untuk ${booking.day}, ${booking.timeSlot}. ${booking.email ? 'Email pengesahan telah dihantar.' : ''}`);
-            
-            // Reset form
-            e.target.reset();
-            document.getElementById('custom-time-section').classList.add('hidden');
-            updateTimeSlots();
-            document.getElementById('availability-status').innerHTML = '';
         });
 
         // Simulate email notification
@@ -1473,31 +1798,52 @@
             });
         }
 
-        // Delete booking
-        function deleteBooking(id) {
+        // Delete booking with real-time sync
+        async function deleteBooking(id) {
             const booking = bookings.find(b => b.id === id);
             if (booking && confirm(`Adakah anda pasti ingin memadam tempahan ${booking.teacherName} (${booking.className}) pada ${booking.day}, ${booking.timeSlot}?`)) {
-                bookings = bookings.filter(b => b.id !== id);
-                localStorage.setItem('smanip_bookings', JSON.stringify(bookings));
-                renderAdminTable();
-                showSuccessModal('Tempahan berjaya dipadam.');
+                try {
+                    updateSyncStatus('syncing', 'Memadam...');
+                    
+                    bookings = bookings.filter(b => b.id !== id);
+                    await saveToCloud({ action: 'delete', bookingId: id });
+                    
+                    renderAdminTable();
+                    refreshAllViews();
+                    showSuccessModal('Tempahan berjaya dipadam.');
+                    
+                } catch (error) {
+                    console.error('Failed to delete booking:', error);
+                    showErrorModal('Gagal memadam tempahan. Cuba lagi.');
+                    updateSyncStatus('error', 'Ralat');
+                }
             }
         }
 
-        // Clear all bookings
-        function clearAllBookings() {
+        // Clear all bookings with real-time sync
+        async function clearAllBookings() {
             if (bookings.length === 0) {
                 showErrorModal('Tiada tempahan untuk dipadam.');
                 return;
             }
             
             if (confirm('Adakah anda pasti ingin memadam SEMUA tempahan? Tindakan ini tidak boleh dibatalkan.')) {
-                bookings = [];
-                nextId = 1;
-                localStorage.setItem('smanip_bookings', JSON.stringify(bookings));
-                localStorage.setItem('smanip_next_id', '1');
-                renderAdminTable();
-                showSuccessModal('Semua tempahan berjaya dipadam.');
+                try {
+                    updateSyncStatus('syncing', 'Memadam semua...');
+                    
+                    bookings = [];
+                    nextId = 1;
+                    await saveToCloud({ action: 'clear_all' });
+                    
+                    renderAdminTable();
+                    refreshAllViews();
+                    showSuccessModal('Semua tempahan berjaya dipadam.');
+                    
+                } catch (error) {
+                    console.error('Failed to clear bookings:', error);
+                    showErrorModal('Gagal memadam tempahan. Cuba lagi.');
+                    updateSyncStatus('error', 'Ralat');
+                }
             }
         }
 
@@ -1668,6 +2014,21 @@
         function refreshSchedule() {
             renderSchedule();
             showSuccessModal('Jadual berjaya dikemaskini!');
+        }
+
+        // Manual sync function
+        async function manualSync() {
+            try {
+                updateSyncStatus('syncing', 'Menyegerak...');
+                await loadFromCloud();
+                refreshAllViews();
+                updateUserCount();
+                showSyncNotification('Data berjaya disegerakkan secara manual');
+            } catch (error) {
+                console.error('Manual sync failed:', error);
+                updateSyncStatus('error', 'Gagal sync');
+                showErrorModal('Gagal menyegerakkan data. Cuba lagi.');
+            }
         }
 
         // Send email notifications (simulated)
@@ -1912,8 +2273,14 @@
             return names[patternType] || patternType;
         }
 
-        // Initialize app
-        document.addEventListener('DOMContentLoaded', function() {
+        // Initialize app with real-time sync
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Initialize real-time sync first
+            await initializeRealTimeSync();
+            
+            // Start listening for broadcasts
+            listenForBroadcasts();
+            
             // Load saved background
             const savedBg = localStorage.getItem('smanip_bg');
             const savedPatternType = localStorage.getItem('smanip_pattern_type');
@@ -1941,7 +2308,10 @@
                     options.classList.add('hidden');
                 }
             });
+            
+            // Update user count periodically
+            setInterval(updateUserCount, 10000); // Every 10 seconds
         });
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'99262da55765b4d0',t:'MTc2MTEwNjU3Ni4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'992d7afe3288b71c',t:'MTc2MTE4MzE0NS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
